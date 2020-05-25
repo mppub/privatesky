@@ -6,6 +6,9 @@
 
 const path = require('path');
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
+if (typeof process.env.PSK_CONFIG_LOCATION === "undefined") {
+    process.env.PSK_CONFIG_LOCATION = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "conf");
+}
 const max_timeout = 10*60*1000; // 10 minutes
 const restartDelays = {};
 

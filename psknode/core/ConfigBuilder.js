@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-let confFolder = process.env.PSK_CONF_FOLDER || path.resolve(path.join(__dirname, '../../conf/'));
+let confFolder = process.env.PSK_CONFIG_LOCATION;
 const seedFileName = 'confSeed';
 const vmqPort = process.env.vmq_port || 8080;
 const vmqAddress = `http://127.0.0.1:${vmqPort}`;
