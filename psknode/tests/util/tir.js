@@ -257,6 +257,9 @@ const Tir = function () {
                 }
 
                 launcherBar.load((err) => {
+                    if (err) {
+                        throw err;
+                    }
                     launcherBar.addFiles(defaultConstitutionBundlesPath, pskPath.join(EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), (err) => {
                         if (err) {
                             throw err;

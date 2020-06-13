@@ -94,6 +94,10 @@
       "src": "https://github.com/privatesky/psk-cache.git"
     },
     {
+      "name": "psk-key-did-resolver",
+      "src": "https://github.com/privatesky/psk-key-did-resolver.git"
+    },
+    {
       "name": "psk-security-context",
       "src": "https://github.com/privatesky/psk-security-context.git"
     },
