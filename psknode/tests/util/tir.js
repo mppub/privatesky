@@ -333,7 +333,7 @@ const Tir = function () {
 
         const virtualMQPort = getRandomPort();
         process.env.vmq_channel_storage = storageFolder;
-        virtualMQNode = virtualMQ.createPskWebServer(virtualMQPort, storageFolder, '', err => {
+        virtualMQNode = virtualMQ.createPskWebServer(virtualMQPort, storageFolder, err => {
             if (err) {
 
                 if (maxTries === 0) {
