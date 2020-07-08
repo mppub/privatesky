@@ -3,9 +3,6 @@ const path = require("path");
 const browserify = require('browserify');
 const argumentsParser = require(path.join(__dirname, './argumentsParserUtil'));
 
-if (typeof process.env.IS_PRODUCTION_BUILD === "undefined") {
-    process.env.IS_PRODUCTION_BUILD = false;
-}
 /** Arguments processing **/
 
 const config = {
@@ -37,7 +34,7 @@ if (typeof config.source === 'string') {
 }
 
 // translating arguments in properties with more suitable names
-config.isProduction = process.env.IS_PRODUCTION_BUILD;
+config.isProduction = config.prod;
 config.skipShims = config.quick;
 
 if(!config.hasOwnProperty('projectMap')) {
