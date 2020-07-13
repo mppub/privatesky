@@ -3,7 +3,6 @@ const path = require("path");
 const browserify = require('browserify');
 const argumentsParser = require(path.join(__dirname, './argumentsParserUtil'));
 
-
 /** Arguments processing **/
 
 const config = {
