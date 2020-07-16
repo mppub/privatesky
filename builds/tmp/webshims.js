@@ -20,7 +20,7 @@ if(typeof $$.environmentType === "undefined"){
     or.enableForEnvironment(or.constants.BROWSER_ENVIRONMENT_TYPE);
 }else{
     if(allowedEnvTypes.indexOf($$.environmentType)!==-1){
-        console.log(`Webshims bundle should be loaded only in ${JSON.stringify(allowedEnvTypes)}`);
+        console.log(`Webshims bundle should be loaded only in ${JSON.stringify(allowedEnvTypes)}. Currently env type is: ${$$.environmentType}`);
     }
 }
 
