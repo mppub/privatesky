@@ -37,143 +37,144 @@ const EDFS = require('edfs');
 const pskPath = require("swarmutils").path;
 let edfs;
 
-function ensureEnvironmentIsReady(edfsURL) {
+function ensureEnvironmentIsReady(edfsURL, callback) {
 
     if (!$$.securityContext) {
         $$.securityContext = require("psk-security-context").createSecurityContext();
     }
 
     edfs = EDFS.attachToEndpoint(edfsURL);
+    waitForServer(edfsURL, callback);
 }
 
 function createOrUpdateConfiguration(fileConfiguration, callback) {
-    ensureEnvironmentIsReady(vmqAddress);
-
-    $$.securityContext.generateIdentity((err) => {
-        if (err) throw err;
-        if (fileConfiguration) {
-            edfs.loadBar(fileConfiguration.constitutionSeed, (err, constitutionBar) => {
-                if (err) {
-                    throw err;
-                }
-
-                constitutionBar.delete("/", (err) => {
+    ensureEnvironmentIsReady(vmqAddress, (err) => {
+        $$.securityContext.generateIdentity((err) => {
+            if (err) throw err;
+            if (fileConfiguration) {
+                edfs.loadBar(fileConfiguration.constitutionSeed, (err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
-                    constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
-                        callback(err, fileConfiguration.launcherSeed);
+
+                    constitutionBar.delete("/", (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                        constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
+                            callback(err, fileConfiguration.launcherSeed);
+                        });
                     });
                 });
-            });
-        } else {
-            let fileConfiguration = {};
-            edfs.createBar((err, constitutionBar) => {
-                if (err) {
-                    throw err;
-                }
-                constitutionBar.load((err) => {
+            } else {
+                let fileConfiguration = {};
+                edfs.createBar((err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
-
-                    constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-                        fileConfiguration.constitutionSeed = constitutionBar.getSeed();
-                        buildDossierInfrastructure(fileConfiguration);
-                    });
-                })
-            });
-        }
-
-        function buildDossierInfrastructure(fileConfiguration) {
-            edfs.createRawDossier((err, launcherConfigDossier) => {
-                if (err) {
-                    throw err;
-                }
-
-                launcherConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, " ", (err) => {
-                    fileConfiguration.launcherSeed = launcherConfigDossier.getSeed();
-                    if (err) {
-                        throw err;
-                    }
-
-                    edfs.createRawDossier((err, domainConfigDossier) => {
+                    constitutionBar.load((err) => {
                         if (err) {
                             throw err;
                         }
 
-                        domainConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, defaultDomainName, (err) => {
+                        constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
                             if (err) {
                                 throw err;
                             }
-                            fileConfiguration.domainSeed = domainConfigDossier.getSeed();
+                            fileConfiguration.constitutionSeed = constitutionBar.getSeed();
+                            buildDossierInfrastructure(fileConfiguration);
+                        });
+                    })
+                });
+            }
 
-                            launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
+            function buildDossierInfrastructure(fileConfiguration) {
+                edfs.createRawDossier((err, launcherConfigDossier) => {
+                    if (err) {
+                        throw err;
+                    }
 
+                    launcherConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, " ", (err) => {
+                        fileConfiguration.launcherSeed = launcherConfigDossier.getSeed();
+                        if (err) {
+                            throw err;
+                        }
+
+                        edfs.createRawDossier((err, domainConfigDossier) => {
+                            if (err) {
+                                throw err;
+                            }
+
+                            domainConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, defaultDomainName, (err) => {
                                 if (err) {
                                     throw err;
                                 }
+                                fileConfiguration.domainSeed = domainConfigDossier.getSeed();
 
-                                domainConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
+                                launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
+
                                     if (err) {
                                         throw err;
                                     }
 
-                                    domainConfigDossier.readFile(EDFS.constants.CSB.MANIFEST_FILE, function (err, content) {
-                                        console.log("Getting", err, content.toString());
-                                        if (err) {
-                                            throw err;
-                                        }
-                                    });
-
-                                    dossier.load(fileConfiguration.launcherSeed, identity, (err, launcherCSB) => {
+                                    domainConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
                                         if (err) {
                                             throw err;
                                         }
 
-                                        launcherCSB.startTransaction("Domain", "getDomainDetails", defaultDomainName)
-                                            .onReturn((err, domainDetails) => {
-                                                if (err) {
-                                                    //means no demo domain found... let's build it
-                                                    dossier.load(fileConfiguration.domainSeed, identity, (err, domainCSB) => {
-                                                        if (err) {
-                                                            throw err;
-                                                        }
+                                        domainConfigDossier.readFile(EDFS.constants.CSB.MANIFEST_FILE, function (err, content) {
+                                            console.log("Getting", err, content.toString());
+                                            if (err) {
+                                                throw err;
+                                            }
+                                        });
 
-                                                        launcherCSB.startTransaction("Domain", "add", defaultDomainName, "system", '../../', fileConfiguration.domainSeed)
-                                                            .onReturn((err) => {
-                                                                if (err) {
-                                                                    throw err;
-                                                                }
+                                        dossier.load(fileConfiguration.launcherSeed, identity, (err, launcherCSB) => {
+                                            if (err) {
+                                                throw err;
+                                            }
 
-                                                                domainCSB.startTransaction('DomainConfigTransaction', 'add', defaultDomainName, communicationInterfaces)
-                                                                    .onReturn((err) => {
-                                                                        if (err) {
-                                                                            throw err;
-                                                                        }
+                                            launcherCSB.startTransaction("Domain", "getDomainDetails", defaultDomainName)
+                                                .onReturn((err, domainDetails) => {
+                                                    if (err) {
+                                                        //means no demo domain found... let's build it
+                                                        dossier.load(fileConfiguration.domainSeed, identity, (err, domainCSB) => {
+                                                            if (err) {
+                                                                throw err;
+                                                            }
 
-                                                                        fs.writeFileSync(seedFileLocation, JSON.stringify(fileConfiguration), 'utf8');
-                                                                        callback(undefined, fileConfiguration.launcherSeed);
-                                                                    });
-                                                            });
-                                                    });
-                                                }
+                                                            launcherCSB.startTransaction("Domain", "add", defaultDomainName, "system", '../../', fileConfiguration.domainSeed)
+                                                                .onReturn((err) => {
+                                                                    if (err) {
+                                                                        throw err;
+                                                                    }
 
-                                            });
+                                                                    domainCSB.startTransaction('DomainConfigTransaction', 'add', defaultDomainName, communicationInterfaces)
+                                                                        .onReturn((err) => {
+                                                                            if (err) {
+                                                                                throw err;
+                                                                            }
+
+                                                                            fs.writeFileSync(seedFileLocation, JSON.stringify(fileConfiguration), 'utf8');
+                                                                            callback(undefined, fileConfiguration.launcherSeed);
+                                                                        });
+                                                                });
+                                                        });
+                                                    }
+
+                                                });
+                                        });
                                     });
                                 });
+
                             });
+                        })
+                    });
+                })
 
-                        });
-                    })
-                });
-            })
+            }
 
-        }
-
+        });
     });
 }
 
@@ -187,6 +188,20 @@ function getSeed(callback) {
     } finally {*/
     createOrUpdateConfiguration(fileConfiguration, callback);
     /*}*/
+}
+
+require("psk-http-client");
+function waitForServer(url, callback) {
+    $$.remote.doHttpGet(url, (err) => {
+        if (err) {
+            console.log("The server has not yet started. Waiting...");
+            setTimeout(() => {
+                waitForServer(url, callback);
+            }, 100);
+        } else {
+            callback(undefined);
+        }
+    });
 }
 
 module.exports = {
