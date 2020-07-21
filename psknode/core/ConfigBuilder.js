@@ -193,8 +193,8 @@ function getSeed(callback) {
 require("psk-http-client");
 function waitForServer(url, callback) {
     $$.remote.doHttpGet(url, (err) => {
-        if (err) {
-            console.log("The server has not yet started. Waiting...");
+        if (err && err.statusCode !== 403) {
+            console.log(`The request to ${url} failed. Status code ${err.statusCode}. Waiting for server to start...`);
             setTimeout(() => {
                 waitForServer(url, callback);
             }, 100);
