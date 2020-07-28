@@ -4,7 +4,7 @@ require(path.join(__dirname, '../../bundles/pskWebServer.js'));
 require(path.join(__dirname, '../../bundles/edfsBar.js'));
 require(path.join(__dirname, '../../bundles/consoleTools'));
 
-const PskWebServer = require('psk-webserver');
+const PskWebServer = require('psk-apihub');
 const fs = require('fs');
 if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");

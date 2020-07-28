@@ -155,7 +155,7 @@ function whenAllFinished(array, handler, callback) {
 }
 
 const Tir = function () {
-    const virtualMQ = require('psk-webserver');
+    const virtualMQ = require('psk-apihub');
     const pingPongFork = require('../../core/utils/pingpongFork');
     const EDFS = require('edfs');
     let edfs; // will be instantiated after getting virtualMQ node up and getting the url

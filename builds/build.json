@@ -1,7 +1,7 @@
 {
   "webshims": {"deps": "overwrite-require, assert, crypto, pskcrypto, zlib, util, path,os, events, stream, buffer, timers", "bare": false, "bundleExternal": true, "exclude": "psklogger"},
   "pskruntime": "callflow, swarmutils, soundpubsub, pskbuffer, @msgpack/msgpack, psklogger, psk-security-context, syndicate, swarm-engine",
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, edfs, dossier, key-ssi-resolver, psk-webserver, buffer-crc32, node-fd-slicer, edfs-middleware, psk-http-client, zmq_adapter, swarmutils, callflow, soundpubsub, psk-security-context, dossier-wizard",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, edfs, dossier, key-ssi-resolver, psk-apihub, buffer-crc32, node-fd-slicer, edfs-middleware, psk-http-client, zmq_adapter, swarmutils, callflow, soundpubsub, psk-security-context, dossier-wizard",
   "consoleTools":"pskwallet, buffer-crc32, node-fd-slicer",
   "blockchain": "blockchain",
   "sandboxBase": {"deps": "callflow, swarm-engine, overwrite-require, psklogger, swarmutils, soundpubsub, pskbuffer, assert, buffer, events, path, querystring, stream, string_decoder, timers, url, util, inherits, zlib, ieee754, base64-js, process/browser.js", "insertGlobals":true, "bare": false, "bundleExternal": false, "autoLoad": true},
