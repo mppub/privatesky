@@ -76,10 +76,10 @@ require('../../bundles/edfsBar');
 require('callflow');
 
 const ConfigBox = require('../../core/ConfigBuilder');
-ConfigBox.getSeed((err, seed) => {
+ConfigBox.getKeySSI((err, keySSI) => {
     if (err) {
         throw err;
     }
 
-    startProcess(path.join(__dirname, '../../core/launcher.js'), [seed.toString()]);
+    startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI.toString()]);
 });
