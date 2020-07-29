@@ -35,7 +35,6 @@ const communicationInterfaces = {
 const dossier = require('dossier');
 const EDFS = require('edfs');
 const pskPath = require("swarmutils").path;
-let edfs;
 const RAW_DOSSIER_TYPE = "RawDossier";
 const BAR_TYPE = "Bar";
 function ensureEnvironmentIsReady(edfsURL, callback) {
@@ -44,7 +43,6 @@ function ensureEnvironmentIsReady(edfsURL, callback) {
         $$.securityContext = require("psk-security-context").createSecurityContext();
     }
 
-    // edfs = EDFS.attachToEndpoint(edfsURL);
     waitForServer(edfsURL, callback);
 }
 
@@ -53,7 +51,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
         $$.securityContext.generateIdentity((err) => {
             if (err) throw err;
             if (fileConfiguration) {
-                EDFS.resolveSSI(fileConfiguration.constitutionKeySSI, BAR_TYPE, (err, constitutionBar) => {
+                EDFS.resolveSSI(fileConfiguration.constitutionSeed, BAR_TYPE, (err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
@@ -73,7 +71,6 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                     if (err) {
                         throw err;
                     }
-                    console.log("Created DSU", constitutionBar.getKeySSI());
                     constitutionBar.load((err) => {
                         if (err) {
                             throw err;
@@ -83,7 +80,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                             if (err) {
                                 throw err;
                             }
-                            fileConfiguration.constitutionKeySSI = constitutionBar.getKeySSI();
+                            fileConfiguration.constitutionSeed = constitutionBar.getKeySSI();
                             buildDossierInfrastructure(fileConfiguration);
                         });
                     })
@@ -113,19 +110,18 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                 }
                                 fileConfiguration.domainSeed = domainConfigDossier.getKeySSI();
 
-                                launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionKeySSI, function (err) {
+                                launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
 
                                     if (err) {
                                         throw err;
                                     }
 
-                                    domainConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionKeySSI, function (err) {
+                                    domainConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
                                         if (err) {
                                             throw err;
                                         }
 
                                         domainConfigDossier.readFile(EDFS.constants.CSB.MANIFEST_FILE, function (err, content) {
-                                            console.log("Getting", err, content.toString());
                                             if (err) {
                                                 throw err;
                                             }
