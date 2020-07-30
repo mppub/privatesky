@@ -231,11 +231,11 @@ const Tir = function () {
             $$.BDNS.addConfig("default", {
                 endpoints: [
                     {
-                        endpoint:`http://localhost:${virtualMQPort}`,
+                        endpoint: `http://localhost:${virtualMQPort}`,
                         type: 'brickStorage'
                     },
                     {
-                        endpoint:`http://localhost:${virtualMQPort}`,
+                        endpoint: `http://localhost:${virtualMQPort}`,
                         type: 'anchorService'
                     }
                 ]
@@ -277,35 +277,39 @@ const Tir = function () {
                             throw err;
                         }
 
-                        const launcherBarSeed = launcherBar.getKeySSI();
-                        const dossier = require("dossier");
-
-                        dossier.load(launcherBarSeed, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
+                        launcherBar.getKeySSI((err, launcherKeySSI) => {
                             if (err) {
                                 throw err;
                             }
+                            const dossier = require("dossier");
 
-                            global.currentHandler = csbHandler;
-                            whenAllFinished(Object.values(domainConfigs), this.buildDomainConfiguration, (err) => {
+                            dossier.load(launcherKeySSI, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
                                 if (err) {
                                     throw err;
                                 }
 
-                                const seed = launcherBarSeed;
-
-                                testerNode = pingPongFork.fork(
-                                    path.resolve(path.join(__dirname, "../../core/launcher.js")),
-                                    [seed, rootFolder],
-                                    {
-                                        stdio: 'inherit',
-                                        env: {
-                                            PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`
-                                        }
+                                global.currentHandler = csbHandler;
+                                whenAllFinished(Object.values(domainConfigs), this.buildDomainConfiguration, (err) => {
+                                    if (err) {
+                                        throw err;
                                     }
-                                );
 
-                                initializeSwarmEngine(virtualMQPort);
-                                prepareTeardownTimeout();
+                                    const seed = launcherKeySSI;
+
+                                    testerNode = pingPongFork.fork(
+                                        path.resolve(path.join(__dirname, "../../core/launcher.js")),
+                                        [seed, rootFolder],
+                                        {
+                                            stdio: 'inherit',
+                                            env: {
+                                                PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`
+                                            }
+                                        }
+                                    );
+
+                                    initializeSwarmEngine(virtualMQPort);
+                                    prepareTeardownTimeout();
+                                });
                             });
                         });
                     });
