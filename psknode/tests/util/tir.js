@@ -228,6 +228,18 @@ const Tir = function () {
             }
 
             virtualMQPort = vmqPort;
+            $$.BDNS.addConfig("default", {
+                endpoints: [
+                    {
+                        endpoint:`http://localhost:${virtualMQPort}`,
+                        type: 'brickStorage'
+                    },
+                    {
+                        endpoint:`http://localhost:${virtualMQPort}`,
+                        type: 'anchorService'
+                    }
+                ]
+            })
 
             if (Object.keys(domainConfigs).length === 0) { // no domain added
                 prepareTeardownTimeout();
@@ -251,7 +263,7 @@ const Tir = function () {
                 fakeDomainFile
             ];
 
-            edfs.createBar((err, launcherBar) => {
+            EDFS.createDSU("Bar", (err, launcherBar) => {
                 if (err) {
                     throw err;
                 }
@@ -265,7 +277,7 @@ const Tir = function () {
                             throw err;
                         }
 
-                        const launcherBarSeed = launcherBar.getSeed();
+                        const launcherBarSeed = launcherBar.getKeySSI();
                         const dossier = require("dossier");
 
                         dossier.load(launcherBarSeed, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
@@ -346,9 +358,6 @@ const Tir = function () {
                 launchVirtualMQNode(maxTries - 1, storageFolder, callback);
                 return
             }
-
-            const edfsURL = `http://localhost:${virtualMQPort}`;
-            edfs = EDFS.attachToEndpoint(edfsURL);
 
             $$.securityContext.generateIdentity((err, agentId) => {
                 if (err) {
@@ -515,7 +524,7 @@ const Tir = function () {
                 domainName = "";
             }
 
-            edfs.createBar((err, constitutionArchive) => {
+            EDFS.createDSU("Bar", (err, constitutionArchive) => {
                 if (err) {
                     return callback(err);
                 }
