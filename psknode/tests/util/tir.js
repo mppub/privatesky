@@ -516,7 +516,9 @@ const Tir = function () {
                     if (err) {
                         return callback(err);
                     }
-                    callback(undefined, archive.getSeed());
+                    archive.getKeySSI((err, keySSI) => {
+                        callback(err, keySSI);
+                    });
                 });
             });
         }
