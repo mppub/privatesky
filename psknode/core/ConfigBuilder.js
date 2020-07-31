@@ -37,14 +37,24 @@ const EDFS = require('edfs');
 const pskPath = require("swarmutils").path;
 const RAW_DOSSIER_TYPE = "RawDossier";
 const BAR_TYPE = "Bar";
-
-function ensureEnvironmentIsReady(edfsURL, callback) {
+$$.BDNS.addConfig("default", {
+    endpoints: [
+        {
+            endpoint: vmqAddress,
+            type: 'brickStorage'
+        },
+        {
+            endpoint: vmqAddress,
+            type: 'anchorService'
+        }
+    ]
+})
+function ensureEnvironmentIsReady(vmqAddress, callback) {
 
     if (!$$.securityContext) {
         $$.securityContext = require("psk-security-context").createSecurityContext();
     }
-
-    waitForServer(edfsURL, callback);
+    waitForServer(vmqAddress, callback);
 }
 
 function createOrUpdateConfiguration(fileConfiguration, callback) {
