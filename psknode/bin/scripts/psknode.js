@@ -81,5 +81,5 @@ ConfigBox.getKeySSI((err, keySSI) => {
         throw err;
     }
 
-    startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI.toString()]);
+    startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI]);
 });

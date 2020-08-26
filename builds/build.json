@@ -8,7 +8,7 @@
   "edfsBar": "bar, psk-http-client, psk-cache, edfs, edfs-middleware, edfs-brick-storage, bar-fs-adapter, key-ssi-resolver, adler32, overwrite-require, swarmutils, pskcrypto, dossier",
   "testsRuntime": "overwrite-require, pskcrypto, psk-cache, edfs, double-check, blockchain, swarmutils, soundpubsub, dossier, swarm-engine, key-ssi-resolver",
   "csbBoot": "overwrite-require, edfs, psk-cache, dossier, key-ssi-resolver",
-  "bindableModel": "overwrite-require, swarmutils, soundpubsub, psk-bindable-model",
+  "bindableModel": {"deps": "overwrite-require, swarmutils, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "swBoot": {"deps":"edfs, dossier, key-ssi-resolver, swarm-engine/bootScripts/browser/sw:sw, pskcrypto, psk-cache","autoLoad": true, "bundleExternal":true, "exclude": "psklogger"},
   "hostBoot": {"deps": "swarm-engine/bootScripts/browser/host:boot-host, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "ssappBoot": {"deps": "swarm-engine/bootScripts/browser/ssapp:boot-ssapp, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},

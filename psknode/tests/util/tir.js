@@ -228,6 +228,18 @@ const Tir = function () {
             }
 
             virtualMQPort = vmqPort;
+            $$.BDNS.addConfig("default", {
+                endpoints: [
+                    {
+                        endpoint: `http://localhost:${virtualMQPort}`,
+                        type: 'brickStorage'
+                    },
+                    {
+                        endpoint: `http://localhost:${virtualMQPort}`,
+                        type: 'anchorService'
+                    }
+                ]
+            })
 
             if (Object.keys(domainConfigs).length === 0) { // no domain added
                 prepareTeardownTimeout();
@@ -251,7 +263,7 @@ const Tir = function () {
                 fakeDomainFile
             ];
 
-            edfs.createBar((err, launcherBar) => {
+            EDFS.createDSU("Bar", (err, launcherBar) => {
                 if (err) {
                     throw err;
                 }
@@ -265,35 +277,39 @@ const Tir = function () {
                             throw err;
                         }
 
-                        const launcherBarSeed = launcherBar.getSeed();
-                        const dossier = require("dossier");
-
-                        dossier.load(launcherBarSeed, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
+                        launcherBar.getKeySSI((err, launcherKeySSI) => {
                             if (err) {
                                 throw err;
                             }
+                            const dossier = require("dossier");
 
-                            global.currentHandler = csbHandler;
-                            whenAllFinished(Object.values(domainConfigs), this.buildDomainConfiguration, (err) => {
+                            dossier.load(launcherKeySSI, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
                                 if (err) {
                                     throw err;
                                 }
 
-                                const seed = launcherBarSeed;
-
-                                testerNode = pingPongFork.fork(
-                                    path.resolve(path.join(__dirname, "../../core/launcher.js")),
-                                    [seed, rootFolder],
-                                    {
-                                        stdio: 'inherit',
-                                        env: {
-                                            PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`
-                                        }
+                                global.currentHandler = csbHandler;
+                                whenAllFinished(Object.values(domainConfigs), this.buildDomainConfiguration, (err) => {
+                                    if (err) {
+                                        throw err;
                                     }
-                                );
 
-                                initializeSwarmEngine(virtualMQPort);
-                                prepareTeardownTimeout();
+                                    const seed = launcherKeySSI;
+
+                                    testerNode = pingPongFork.fork(
+                                        path.resolve(path.join(__dirname, "../../core/launcher.js")),
+                                        [seed, rootFolder],
+                                        {
+                                            stdio: 'inherit',
+                                            env: {
+                                                PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`
+                                            }
+                                        }
+                                    );
+
+                                    initializeSwarmEngine(virtualMQPort);
+                                    prepareTeardownTimeout();
+                                });
                             });
                         });
                     });
@@ -346,9 +362,6 @@ const Tir = function () {
                 launchVirtualMQNode(maxTries - 1, storageFolder, callback);
                 return
             }
-
-            const edfsURL = `http://localhost:${virtualMQPort}`;
-            edfs = EDFS.attachToEndpoint(edfsURL);
 
             $$.securityContext.generateIdentity((err, agentId) => {
                 if (err) {
@@ -503,7 +516,9 @@ const Tir = function () {
                     if (err) {
                         return callback(err);
                     }
-                    callback(undefined, archive.getSeed());
+                    archive.getKeySSI((err, keySSI) => {
+                        callback(err, keySSI);
+                    });
                 });
             });
         }
@@ -515,7 +530,7 @@ const Tir = function () {
                 domainName = "";
             }
 
-            edfs.createBar((err, constitutionArchive) => {
+            EDFS.createDSU("Bar", (err, constitutionArchive) => {
                 if (err) {
                     return callback(err);
                 }

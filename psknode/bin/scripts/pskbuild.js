@@ -362,14 +362,19 @@ function doBrowserify(targetName, src, dest, opt, externalModules, exportsModule
         browserifyPackage.bundle().pipe(sourceMapExtractor).pipe(out);
         endCallback(targetName);
 
-        if (config.externalTarget) {
-            ((dest) => {
-                out.on('finish', () => {
-                    copyToExternalDirectory(dest);
-                });
-            })(dest);
-        }
+        ((dest) => {
+            out.on('finish', () => {
 
+                if (typeof opt.exportedEsModule !== "undefined") {
+                    let moduleName = opt.exportedEsModule;
+                    fs.appendFileSync(dest, `\nexport default ${opt.externalRequireName}('${moduleName}')`)
+                }
+
+                if (config.externalTarget) {
+                    copyToExternalDirectory(dest);
+                }
+            });
+        })(dest)
 
     }
 
