@@ -58,6 +58,10 @@
       "src": "https://github.com/privatesky/node-fd-slicer.git"
     },
     {
+      "name": "open-dsu",
+      "src": "https://github.com/privatesky/opendsu.git"
+    },
+    {
       "name": "overwrite-require",
       "src": "https://github.com/privatesky/overwrite-require.git"
     },
