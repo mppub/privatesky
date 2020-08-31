@@ -54,6 +54,10 @@
       "src": "https://github.com/privatesky/edfs-middleware.git"
     },
     {
+      "name": "key-ssi-resolver",
+      "src": "https://github.com/privatesky/key-ssi-resolver.git"
+    },
+    {
       "name": "node-fd-slicer",
       "src": "https://github.com/privatesky/node-fd-slicer.git"
     },
@@ -98,16 +102,16 @@
       "src": "https://github.com/privatesky/psk-cache.git"
     },
     {
-      "name": "key-ssi-resolver",
-      "src": "https://github.com/privatesky/key-ssi-resolver.git"
-    },
-    {
       "name": "psk-security-context",
       "src": "https://github.com/privatesky/psk-security-context.git"
     },
     {
       "name": "pskwallet",
       "src": "https://github.com/privatesky/pskwallet.git"
+    },
+    {
+      "name": "Queue",
+      "src": "https://github.com/privatesky/Queue.git"
     },
     {
       "name": "soundpubsub",
