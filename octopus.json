@@ -114,8 +114,8 @@
       "src": "https://github.com/privatesky/pskwallet.git"
     },
     {
-      "name": "Queue",
-      "src": "https://github.com/privatesky/Queue.git"
+      "name": "queue",
+      "src": "https://github.com/privatesky/queue.git"
     },
     {
       "name": "soundpubsub",
