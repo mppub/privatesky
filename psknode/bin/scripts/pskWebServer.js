@@ -10,6 +10,11 @@ const fs = require('fs');
 if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");
 }
+
+if (!process.env.PSK_CONFIG_LOCATION) {
+    process.env.PSK_CONFIG_LOCATION = "./conf";
+}
+
 function startServer() {
     let sslConfig = undefined;
     let config = PskWebServer.getServerConfig();
