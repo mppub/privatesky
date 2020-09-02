@@ -3,7 +3,8 @@
  *
  */
 const path = require('path');
-process.env.PSK_ROOT_INSTALATION_FOLDER = require("path").join(__dirname, "../../../");
+process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
+process.env.PSK_CONFIG_LOCATION = process.env.PSK_ROOT_INSTALATION_FOLDER + "/conf";
 
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/edfsBar.js")));
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")));
