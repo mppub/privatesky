@@ -71,7 +71,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                         if (err) {
                             throw err;
                         }
-                        constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
+                        constitutionBar.addFolder(constitutionFolder, "/", { encrypt: true }, (err) => {
                             callback(err, fileConfiguration.launcherSeed);
                         });
                     });
@@ -87,7 +87,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                             throw err;
                         }
 
-                        constitutionBar.addFolder(constitutionFolder, "/", {encrypt: true}, (err) => {
+                        constitutionBar.addFolder(constitutionFolder, "/", { encrypt: true }, (err) => {
                             if (err) {
                                 throw err;
                             }
