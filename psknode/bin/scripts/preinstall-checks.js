@@ -65,7 +65,7 @@ process.nextTick(() => {
 	dependencies = {
 		common: {
 			node: VersionRequirement.from('10.15.3'),
-			python: VersionRequirement.upToNextMajor('2.7.0'),
+			python: VersionRequirement.from('2.7.0'),
 		},
 		linux: {
 			compiler: {
@@ -404,16 +404,19 @@ const dependenciesRunners = {
 
 		const majorVersionToCheck = isValidVersion.targetVersionObj.major;
 
+		let getPythonVersion = function (pythonInvoker) {
+			const output = childProcess.spawnSync(pythonInvoker, ['--version']);
+			let pythonCallOutput = output.stderr;
+			return pythonCallOutput !== null && pythonCallOutput.length === 0 ? output.stdout : pythonCallOutput;
+		}
+
 		if (majorVersionToCheck === 2) {
-			const output = childProcess.spawnSync('python', ['--version']);
-			pythonCallOutput = output.stderr;
+			pythonCallOutput = getPythonVersion('python');
 			if (pythonCallOutput === null) {
-				const output = childProcess.spawnSync('python2', ['--version']);
-				pythonCallOutput = output.stderr;
+				pythonCallOutput = getPythonVersion('python2');
 			}
 		} else if (majorVersionToCheck === 3) {
-			const output = childProcess.spawnSync('python3', ['--version']);
-			pythonCallOutput = output.stdout;
+			pythonCallOutput = getPythonVersion('python3');
 		}
 
 		if (pythonCallOutput === null) {
