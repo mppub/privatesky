@@ -33,22 +33,12 @@ const communicationInterfaces = {
 };
 
 const dossier = require('dossier');
-const EDFS = require('edfs');
 const pskPath = require("swarmutils").path;
-const RAW_DOSSIER_TYPE = "RawDossier";
-const BAR_TYPE = "Bar";
-$$.BDNS.addConfig("default", {
-    endpoints: [
-        {
-            endpoint: vmqAddress,
-            type: 'brickStorage'
-        },
-        {
-            endpoint: vmqAddress,
-            type: 'anchorService'
-        }
-    ]
-})
+const EDFS = require('edfs');
+const opendsu = require('opendsu');
+const resolver = opendsu.loadApi('resolver');
+const keyssi = opendsu.loadApi('keyssi');
+const DEFAULT_DOMAIN = 'default';
 function ensureEnvironmentIsReady(vmqAddress, callback) {
 
     if (!$$.securityContext) {
@@ -62,7 +52,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
         $$.securityContext.generateIdentity((err) => {
             if (err) throw err;
             if (fileConfiguration) {
-                EDFS.resolveSSI(fileConfiguration.constitutionSeed, BAR_TYPE, (err, constitutionBar) => {
+                resolver.loadDSU(fileConfiguration.constitutionSeed, (err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
@@ -78,10 +68,11 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                 });
             } else {
                 let fileConfiguration = {};
-                EDFS.createDSU(BAR_TYPE, (err, constitutionBar) => {
+                resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
+
                     constitutionBar.load((err) => {
                         if (err) {
                             throw err;
@@ -105,12 +96,16 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
             }
 
             function buildDossierInfrastructure(fileConfiguration) {
-                EDFS.createDSU(RAW_DOSSIER_TYPE, (err, launcherConfigDossier) => {
+                resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, launcherConfigDossier) => {
                     if (err) {
                         throw err;
                     }
 
                     launcherConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, " ", (err) => {
+                        if (err) {
+                            throw err;
+                        }
+
                         launcherConfigDossier.getKeySSI((err, keySSI) => {
                             if (err) {
                                 throw err;
@@ -121,7 +116,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                 throw err;
                             }
 
-                            EDFS.createDSU(RAW_DOSSIER_TYPE, (err, domainConfigDossier) => {
+                            resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, domainConfigDossier) => {
                                 if (err) {
                                     throw err;
                                 }
@@ -137,9 +132,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                         }
 
                                         fileConfiguration.domainSeed = domainKeySSI;
-
                                         launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
-
                                             if (err) {
                                                 throw err;
                                             }
@@ -153,6 +146,8 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                                     if (err) {
                                                         throw err;
                                                     }
+
+
                                                 });
 
                                                 dossier.load(fileConfiguration.launcherSeed, identity, (err, launcherCSB) => {
@@ -194,7 +189,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                     });
                                 });
                             })
-                        })
+                        });
                     });
                 })
             }
@@ -214,7 +209,11 @@ function getKeySSI(callback) {
     /*}*/
 }
 
-require("psk-http-client");
+try {
+    require("psk-http-client");
+} catch (e){
+    throw e;
+}
 
 function waitForServer(url, callback) {
     $$.remote.doHttpGet(url, (err) => {
