@@ -72,7 +72,8 @@ startProcess(path.join(__dirname, 'pskWebServer.js'));
 require('../../bundles/pskWebServer');
 require('../../bundles/pskruntime');
 require('../../bundles/blockchain');
-require('../../bundles/edfsBar');
+require('../../bundles/openDSU');
+
 require('callflow');
 
 const ConfigBox = require('../../core/ConfigBuilder');
@@ -81,5 +82,6 @@ ConfigBox.getKeySSI((err, keySSI) => {
         throw err;
     }
 
+    console.log("Got key ssi from config box ................. ######################", keySSI);
     startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI]);
 });
