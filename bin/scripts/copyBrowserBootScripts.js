@@ -22,7 +22,7 @@ let browserBootScripts = [
     {src: "swHostBoot.js", target: "/"},
     {src: "ssappBoot.js", target: bundlesFolder},
     {src: "hostBoot.js", target: bundlesFolder},
-    {src: "edfsBar.js", target: bundlesFolder},
+    {src: "openDSU.js", target: bundlesFolder},
     {src: "webshims.js", target: bundlesFolder}
 ];
 
