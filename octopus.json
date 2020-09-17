@@ -46,10 +46,6 @@
       "src": "https://github.com/privatesky/double-check.git"
     },
     {
-      "name": "edfs",
-      "src": "https://github.com/privatesky/edfs.git"
-    },
-    {
       "name": "edfs-brick-storage",
       "src": "https://github.com/privatesky/edfs-brick-storage.git"
     },
