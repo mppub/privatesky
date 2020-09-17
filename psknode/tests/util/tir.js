@@ -158,8 +158,7 @@ function whenAllFinished(array, handler, callback) {
 const Tir = function () {
     const virtualMQ = require('psk-apihub');
     const pingPongFork = require('../../core/utils/pingpongFork');
-    const EDFS = require('edfs');
-    let edfs; // will be instantiated after getting virtualMQ node up and getting the url
+    const openDSU = require('opendsu');
 
     if (!$$.securityContext) {
         $$.securityContext = require("psk-security-context").createSecurityContext();
@@ -273,7 +272,7 @@ const Tir = function () {
                     if (err) {
                         throw err;
                     }
-                    launcherBar.addFiles(defaultConstitutionBundlesPath, pskPath.join(EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), (err) => {
+                    launcherBar.addFiles(defaultConstitutionBundlesPath, openDSU.constants.CONSTITUTION_FOLDER, (err) => {
                         if (err) {
                             throw err;
                         }
@@ -552,7 +551,7 @@ const Tir = function () {
                         if (index >= constitutionPaths.length) {
 
                             if (domainName !== "") {
-                                constitutionArchive.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, domainName, lastHandler)
+                                constitutionArchive.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, domainName, lastHandler)
                             } else {
                                 lastHandler();
                             }
@@ -561,7 +560,7 @@ const Tir = function () {
                         }
 
                         const currentPath = constitutionPaths[index];
-                        constitutionArchive.addFolder(currentPath, pskPath.join(EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), (err) => {
+                        constitutionArchive.addFolder(currentPath, pskPath.join(openDSU.constants.CODE_FOLDER, openDSU.constants.CONSTITUTION_FOLDER), (err) => {
                             if (err) {
                                 return callback(err);
                             }
@@ -630,7 +629,7 @@ const Tir = function () {
             if (err) {
                 return callback(err);
             }
-            targetArchive.addFile(fileName, pskPath.join(EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER, "domain.js"), callback);
+            targetArchive.addFile(fileName, pskPath.join(openDSU.constants.CONSTITUTION_FOLDER, "domain.js"), callback);
         });
     }
 

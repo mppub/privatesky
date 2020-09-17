@@ -34,10 +34,9 @@ const communicationInterfaces = {
 
 const dossier = require('dossier');
 const pskPath = require("swarmutils").path;
-const EDFS = require('edfs');
-const opendsu = require('opendsu');
-const resolver = opendsu.loadApi('resolver');
-const keyssi = opendsu.loadApi('keyssi');
+const openDSU = require('opendsu');
+const resolver = openDSU.loadApi('resolver');
+const keyssi = openDSU.loadApi('keyssi');
 const DEFAULT_DOMAIN = 'default';
 function ensureEnvironmentIsReady(vmqAddress, callback) {
 
@@ -101,7 +100,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                         throw err;
                     }
 
-                    launcherConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, " ", (err) => {
+                    launcherConfigDossier.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, " ", (err) => {
                         if (err) {
                             throw err;
                         }
@@ -121,7 +120,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                     throw err;
                                 }
 
-                                domainConfigDossier.writeFile(EDFS.constants.CSB.DOMAIN_IDENTITY_FILE, defaultDomainName, (err) => {
+                                domainConfigDossier.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, defaultDomainName, (err) => {
                                     if (err) {
                                         throw err;
                                     }
@@ -132,17 +131,17 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                         }
 
                                         fileConfiguration.domainSeed = domainKeySSI;
-                                        launcherConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
+                                        launcherConfigDossier.mount(openDSU.constants.CONSTITUTION_FOLDER, fileConfiguration.constitutionSeed, function (err) {
                                             if (err) {
                                                 throw err;
                                             }
 
-                                            domainConfigDossier.mount(pskPath.join("/", EDFS.constants.CSB.CODE_FOLDER, EDFS.constants.CSB.CONSTITUTION_FOLDER), fileConfiguration.constitutionSeed, function (err) {
+                                            domainConfigDossier.mount(openDSU.constants.CONSTITUTION_FOLDER, fileConfiguration.constitutionSeed, function (err) {
                                                 if (err) {
                                                     throw err;
                                                 }
 
-                                                domainConfigDossier.readFile(EDFS.constants.CSB.MANIFEST_FILE, function (err, content) {
+                                                domainConfigDossier.readFile(openDSU.constants.MANIFEST_FILE, function (err, content) {
                                                     if (err) {
                                                         throw err;
                                                     }
