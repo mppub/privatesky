@@ -34,8 +34,8 @@
       "src": "https://github.com/privatesky/choreo.git"
     },
     {
-      "name": "dossier-wizard",
-      "src": "https://github.com/privatesky/dossier-wizard.git"
+      "name": "dsu-wizard",
+      "src": "https://github.com/privatesky/dsu-wizard.git"
     },
     {
       "name": "dossier",
