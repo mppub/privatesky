@@ -28,9 +28,11 @@ try {
 
     throw e;
 }
-
 if (typeof config.source === 'string') {
     config.source = config.source.split(',');
+    for (let i = 0; i < config.source.length; i++) {
+        config.source[i] = path.resolve(config.source[i]);
+    }
 }
 
 // translating arguments in properties with more suitable names
