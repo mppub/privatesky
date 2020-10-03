@@ -1,11 +1,14 @@
+const TAG = "API-HUB";
+
 let path = require("path");
+
 require("../../core/utils/pingpongFork").enableLifeLine();
 require(path.join(__dirname, '../../bundles/pskWebServer.js'));
 require(path.join(__dirname, '../../bundles/edfsBar.js'));
 require(path.join(__dirname, '../../bundles/consoleTools'));
 
 path = require("swarmutils").path;
-const PskWebServer = require('psk-apihub');
+const API_HUB = require('psk-apihub');
 const fs = require('fs');
 if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");
@@ -17,8 +20,8 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 
 function startServer() {
     let sslConfig = undefined;
-    let config = PskWebServer.getServerConfig();
-    console.log('[PskWebServer] Using certificates from path', path.resolve(config.sslFolder));
+    let config = API_HUB.getServerConfig();
+    console.log(`[${TAG}] Using certificates from path`, path.resolve(config.sslFolder));
 
     try {
         sslConfig = {
@@ -26,16 +29,17 @@ function startServer() {
             key: fs.readFileSync(path.join(config.sslFolder, 'server.key'))
         };
     } catch (e) {
-        console.log('[PskWebServer] No certificates found, PskWebServer will start using HTTP');
+        console.log(`[${TAG}] No certificates found, PskWebServer will start using HTTP`);
     }
 
     const listeningPort = Number.parseInt(config.port);
     const rootFolder = path.resolve(config.storage);
 
-    const virtualMq = PskWebServer.createPskWebServer(listeningPort, rootFolder, sslConfig, (err) => {
+    API_HUB.createInstance(listeningPort, rootFolder, sslConfig, (err) => {
         if (err) {
             console.error(err);
         }
+        console.log(`\n[${TAG}] listening on port :${listeningPort} and ready to receive requests.\n`);
     });
 }
 

@@ -1,2 +1,2 @@
 
-node "%~dp0scripts/psknode.js" %*
+node "%~dp0scripts/serviceLauncher.js" %*

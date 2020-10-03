@@ -1,15 +1,41 @@
-/*
-  Rebuild sources
-  Start A Virtual MQ
-  Start a Launcher
- */
-
 const path = require('path');
+const configFileName = "server.json";
+
+const defaultConfig = {
+    services: ["psk_api_hub"],
+    maxTimeout: 10 * 60 * 1000, // 10 minutes
+    psk_api_hub:{
+        module: "pskApiHubLauncher.js"
+    },
+    domainLauncher:{
+        module: "../../core/launcher.js",
+        configBuilder: "../../coreConfigBuilder",
+        autoConfig: true
+    }
+};
+const TAG = "ServiceLauncher";
+
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
 if (typeof process.env.PSK_CONFIG_LOCATION === "undefined") {
     process.env.PSK_CONFIG_LOCATION = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "conf");
+    console.log(`[${TAG}] process.env.PSK_CONFIG_LOCATION set to <${process.env.PSK_CONFIG_LOCATION}>`);
 }
-const max_timeout = 10*60*1000; // 10 minutes
+
+let config = defaultConfig;
+const configFile = path.join(process.env.PSK_CONFIG_LOCATION, configFileName);
+try{
+    let globalConfig = require(configFile);
+    config = Object.assign(config, globalConfig.serviceLauncher);
+    console.log(`[${TAG}] Configuration file loaded.`);
+}catch(err){
+    if(err.code !== "MODULE_NOT_FOUND"){
+        console.log(`[${TAG}]`, 'Error during config loading. Default config will be used.');
+        console.log(err);
+    }
+    console.log(`[${TAG}]`, `Not able to find file <${configFile}>`)
+}
+
+const max_timeout = config.maxTimeout;
 const restartDelays = {};
 
 const pingFork = require("../../core/utils/pingpongFork").fork;
@@ -17,12 +43,11 @@ const pingFork = require("../../core/utils/pingpongFork").fork;
 let shouldRestart = true;
 const forkedProcesses = {};
 
-
 function startProcess(filePath,  args, options) {
-    console.log("Booting", filePath);
+    console.log(`[${TAG}] Starting a new process using <${filePath}>`);
     forkedProcesses[filePath] = pingFork(filePath, args, options);
 
-    console.log('SPAWNED ', forkedProcesses[filePath].pid);
+    console.log(`[${TAG}]`, `Process with PID=[${forkedProcesses[filePath].pid}] was spawned.`);
 
     function restartWithDelay(filePath){
         let timeout = restartDelays[filePath] || 100;
@@ -56,18 +81,14 @@ function startProcess(filePath,  args, options) {
     forkedProcesses[filePath].on('exit', exitHandler(filePath));
 }
 
-let enableZMQ = true;
-try{
-    require("zeromq");
-}catch(err){
-    enableZMQ = false;
+
+for(let i=0; i<config.services.length; i++){
+    let serviceName = config.services[i];
+    let serviceConfig = config[serviceName];
+    startProcess(path.join(__dirname, serviceConfig.module));
 }
 
-if(enableZMQ){
-    startProcess(path.join(__dirname, 'startZeromqProxy.js'));
-}
-
-startProcess(path.join(__dirname, 'pskWebServer.js'));
+/*
 
 require('../../bundles/pskWebServer');
 require('../../bundles/pskruntime');
@@ -83,4 +104,4 @@ ConfigBox.getKeySSI((err, keySSI) => {
     }
 
     startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI]);
-});
+});*/
