@@ -156,7 +156,7 @@ function whenAllFinished(array, handler, callback) {
 }
 
 const Tir = function () {
-    const virtualMQ = require('psk-apihub');
+    const pskApiHub = require('psk-apihub');
     const pingPongFork = require('../../core/utils/pingpongFork');
     const openDSU = require('opendsu');
 
@@ -352,7 +352,7 @@ const Tir = function () {
 
         const virtualMQPort = getRandomPort();
         process.env.vmq_channel_storage = storageFolder;
-        virtualMQNode = virtualMQ.createPskWebServer(virtualMQPort, storageFolder, err => {
+        virtualMQNode = pskApiHub.createInstance(virtualMQPort, storageFolder, err => {
             if (err) {
 
                 if (maxTries === 0) {
