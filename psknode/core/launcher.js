@@ -22,4 +22,19 @@ if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = codeFolder;
 }
 
-require("./../bundles/launcherBoot");
+require('../bundles/pskWebServer');
+require('../bundles/pskruntime');
+require('../bundles/blockchain');
+require('../bundles/openDSU');
+
+//require('callflow');
+
+const ConfigBox = require('../core/ConfigBuilder');
+ConfigBox.getKeySSI((err, keySSI) => {
+    if (err) {
+        throw err;
+    }
+
+    process.argv.splice(2, 0, keySSI);
+    require("./psknode/bundles/launcherBoot.js");
+});

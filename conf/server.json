@@ -1,4 +1,7 @@
 {
   "port": 8080,
-  "storage": "../tmp"
+  "storage": "../tmp",
+  "serviceLauncher": {
+    "services": ["psk_api_hub", "domainLauncher"]
+  }
 }

@@ -6,4 +6,3 @@ if(typeof $$ === "undefined" || !$$.environmentType) {
 }
 
 require("./pskWebServer_intermediar");
-require('callflow').initialise();

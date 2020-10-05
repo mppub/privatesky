@@ -81,27 +81,8 @@ function startProcess(filePath,  args, options) {
     forkedProcesses[filePath].on('exit', exitHandler(filePath));
 }
 
-
 for(let i=0; i<config.services.length; i++){
     let serviceName = config.services[i];
     let serviceConfig = config[serviceName];
     startProcess(path.join(__dirname, serviceConfig.module));
 }
-
-/*
-
-require('../../bundles/pskWebServer');
-require('../../bundles/pskruntime');
-require('../../bundles/blockchain');
-require('../../bundles/openDSU');
-
-require('callflow');
-
-const ConfigBox = require('../../core/ConfigBuilder');
-ConfigBox.getKeySSI((err, keySSI) => {
-    if (err) {
-        throw err;
-    }
-
-    startProcess(path.join(__dirname, '../../core/launcher.js'), [keySSI]);
-});*/
