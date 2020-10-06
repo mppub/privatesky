@@ -160,10 +160,6 @@ const Tir = function () {
     const pingPongFork = require('../../core/utils/pingpongFork');
     const openDSU = require('opendsu');
 
-    if (!$$.securityContext) {
-        $$.securityContext = require("psk-security-context").createSecurityContext();
-    }
-
     const domainConfigs = {};
     const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), 'psk_'));
 
@@ -361,6 +357,10 @@ const Tir = function () {
 
                 launchVirtualMQNode(maxTries - 1, storageFolder, callback);
                 return
+            }
+
+            if (!$$.securityContext) {
+                $$.securityContext = require("psk-security-context").createSecurityContext();
             }
 
             $$.securityContext.generateIdentity((err, agentId) => {
