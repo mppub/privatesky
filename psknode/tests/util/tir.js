@@ -69,7 +69,7 @@ function createConstitutionFromSources(sources, options, callback) {
         [internalOptions.constitutionName]: {"deps": sourcesNames, "autoLoad": true},
     };
 
-    const dc = require("../../../tests/psk-smoke-testing/open-dsu/bricking/node_modules/double-check");
+    const dc = require("double-check");
     dc.createTestFolder('PSK_DOMAIN-', (err, tmpFolder) => {
         if (err) {
             return callback(err);
@@ -213,7 +213,7 @@ const Tir = function () {
 
         console.info('[TIR] setting working folder root', rootFolder);
 
-        const assert = require("../../../tests/psk-smoke-testing/open-dsu/bricking/node_modules/double-check").assert;
+        const assert = require("double-check").assert;
         assert.addCleaningFunction(() => {
             this.tearDown(0);
         });
