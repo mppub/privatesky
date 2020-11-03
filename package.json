@@ -2,7 +2,6 @@
   "name": "PrivateSky",
   "description": "Execute swarm choregraphies. Control your asynchronous code with explicit flows! Created mainly for simplifying code within SwarmESB/PrivateSky projects but can be used outside SwarmESB ecosystem. ",
   "version": "0.5.0",
-  "_id": "privatesky@0.5.0",
   "homepage": "https://github.com/PrivateSky/privatesky",
   "author": {
     "name": "Alboaie Sinica",
@@ -37,13 +36,11 @@
     "@msgpack/msgpack": "^1.8.0",
     "browserify": "^16.5.0",
     "chokidar": "^3.0.2",
-    "isolated-vm": "2.0.3",
     "octopus": "git+http://git@github.com/privatesky/octopus.git#1.0",
     "source-map-support": "^0.5.13"
   },
   "scripts": {
-    "preinstall": "node bin/scripts/preinstall-checks.js",
-    "postinstall": "node ./node_modules/octopus/scripts/run && node ./node_modules/octopus/scripts/run optionalDependencies",
+    "postinstall": "node ./node_modules/octopus/scripts/run",
     "update": "git pull && npm install",
     "clear-stash": "node bin/scripts/githelpers/gitClearStash.js .",
     "prepare-release": "node ./node_modules/octopus/scripts/run prepare-release",

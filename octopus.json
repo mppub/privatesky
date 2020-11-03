@@ -176,17 +176,6 @@
       ]
     }
   ],
-  "optionalDependencies": [
-    {
-      "name": "zeromq",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "npm install --no-save zeromq@4.6.0 --zmq-external"
-        }
-      ]
-    }
-  ],
   "prepare-release": [
     {
       "name": "preparing-release",
