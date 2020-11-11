@@ -40,14 +40,14 @@ Read our PrivateSky documentation website!
 
 For security and code quality reasons all the integration here and releases will be performed manually by a very small core of developers (mainly Sinica and Cosmin)!
 
-The stable releases will be merged periodically  [here](https://github.com/Axiologic/swarm-engine), [here](https://github.com/privatesky/psk-release) or will be branched.
-[PrivateSky](https://github.com/PrivateSky/privatesky)  is unstable and is developed in master branch. Use it just as a preview for the newer releases.
+The stable releases will be merged periodically  [here](https://github.com/privatesky/psk-release) or will be branched.
+[PrivateSky](https://github.com/PrivateSky/privatesky)  is unstable and is developed in master branch. Use the master just as a preview for the newer releases.
 
-The documentation is located on privatesky.xyz and opendsu.com.
+
 
 
 ### Notes
-
 PrivateSky core GitHub public repository. Based on Axiologic's work on a new execution engine for swarms.
-Still very beta, for the next months this repository will be used for coordination between partners.
+The documentation is located on privatesky.xyz and opendsu.com.
+
 
