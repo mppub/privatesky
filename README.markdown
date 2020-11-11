@@ -43,9 +43,8 @@ For security and code quality reasons all the integration here and releases will
 The stable releases will be merged periodically  [here](https://github.com/Axiologic/swarm-engine), [here](https://github.com/privatesky/psk-release) or will be branched.
 [PrivateSky](https://github.com/PrivateSky/privatesky)  is unstable and is developed in master branch. Use it just as a preview for the newer releases.
 
-The documentation is not ready for public (only for partners)  but if you want access, please send an email to abss@axiologic.net
+The documentation is located on privatesky.xyz and opendsu.com.
 
-Current Release: 0.9.0 (Unstable and incomplete - is a preview for the the whole architecture ) The next public release (0.9.5 ) is scheduled for December 2018 and will contain the all main features. This release is for partener companies to coordinate communication, do not use in production!
 
 ### Notes
 
