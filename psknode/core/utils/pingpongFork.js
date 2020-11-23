@@ -40,7 +40,7 @@ module.exports.enableLifeLine = function(timeout){
     }
 
     let lastConfirmationTime;
-    const interval = timeout || 2000;
+    const interval = timeout || 10 * 60 * 1000;
 
     // this is needed because new Date().getTime() has reduced precision to mitigate timer based attacks
     // for more information see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime
