@@ -14,10 +14,6 @@
       "src": "https://github.com/privatesky/bar-fs-adapter.git"
     },
     {
-      "name": "bdns",
-      "src": "https://github.com/privatesky/bdns.git"
-    },
-    {
       "name": "blockchain",
       "src": "https://github.com/privatesky/blockchain.git"
     },
