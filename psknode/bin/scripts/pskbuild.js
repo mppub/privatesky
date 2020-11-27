@@ -36,7 +36,7 @@ if (typeof config.source === 'string') {
 }
 
 // translating arguments in properties with more suitable names
-config.isProduction = config.prod;
+config.isProduction = true;
 config.skipShims = config.quick;
 
 if(!config.hasOwnProperty('projectMap')) {
@@ -98,7 +98,8 @@ const defaultMap = {
     pskclient: ""
 };
 
-const sharedDefaultMapForDebugMode = 'source-map-support, source-map, buffer-from';
+// const sharedDefaultMapForDebugMode = 'source-map-support, source-map, buffer-from';
+const sharedDefaultMapForDebugMode = '';
 
 const cachedExternalValues = Object.values(externals);
 function getDefaultMapForTarget(targetName) {
@@ -108,7 +109,7 @@ function getDefaultMapForTarget(targetName) {
         mapForTarget = defaultMap[targetName];
     }
 
-    if(!config.isProduction) {
+    if(false && !config.isProduction) {
         if(!cachedExternalValues.includes(targetName)) {
             mapForTarget = concatDependencyMaps(sharedDefaultMapForDebugMode, mapForTarget);
         }

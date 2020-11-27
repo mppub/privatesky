@@ -4,8 +4,6 @@ let path = require("path");
 
 require("../../core/utils/pingpongFork").enableLifeLine();
 require(path.join(__dirname, '../../bundles/pskWebServer.js'));
-require(path.join(__dirname, '../../bundles/edfsBar.js'));
-require(path.join(__dirname, '../../bundles/consoleTools'));
 
 path = require("swarmutils").path;
 const API_HUB = require('psk-apihub');

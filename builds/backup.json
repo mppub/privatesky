@@ -1,0 +1,21 @@
+{
+  "webshims": {"deps": "overwrite-require, assert, crypto, pskcrypto, zlib, util, path,os, events, stream, buffer, timers", "bare": false, "bundleExternal": true, "exclude": "psklogger"},
+  "pskruntime": "callflow, swarmutils, queue, soundpubsub, pskbuffer, @msgpack/msgpack, psklogger, psk-security-context, syndicate, swarm-engine",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, dossier, key-ssi-resolver, psk-apihub, buffer-crc32, node-fd-slicer, edfs-middleware, psk-http-client, zmq_adapter, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard",
+  "consoleTools":"pskwallet, buffer-crc32, node-fd-slicer",
+  "blockchain": "blockchain",
+  "openDSU": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, dossier, adler32, ",
+  "sandboxBase": {"deps": "callflow, swarm-engine, overwrite-require, psklogger, swarmutils, queue, soundpubsub, pskbuffer, assert, buffer, events, path, querystring, stream, string_decoder, timers, url, util, inherits, zlib, ieee754, base64-js, process/browser.js", "insertGlobals":true, "bare": false, "bundleExternal": false, "autoLoad": true},
+  "edfsBar": "bar, psk-http-client, psk-cache, edfs-middleware, edfs-brick-storage, bar-fs-adapter, key-ssi-resolver, adler32, overwrite-require, swarmutils, pskcrypto, dossier",
+  "testsRuntime": "overwrite-require, opendsu, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32",
+  "csbBoot": "overwrite-require, psk-cache, dossier, key-ssi-resolver",
+  "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
+  "swBoot": {"deps":"dossier, key-ssi-resolver, swarm-engine/bootScripts/browser/sw:sw, pskcrypto, psk-cache","autoLoad": true, "bundleExternal":true, "exclude": "psklogger"},
+  "hostBoot": {"deps": "swarm-engine/bootScripts/browser/host:boot-host, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
+  "ssappBoot": {"deps": "swarm-engine/bootScripts/browser/ssapp:boot-ssapp, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
+  "threadBoot": {"deps": "overwrite-require, opendsu, dossier, bar, bar-fs-adapter, edfs-brick-storage, key-ssi-resolver, swarmutils, adler32, psk-cache, pskcrypto, psk-http-client, swarm-engine/bootScripts/ThreadWorkerBootScript:boot-script", "autoLoad": true},
+  "domainBoot": {"deps": "overwrite-require, psklogger, psk-cache, zmq_adapter, psk-security-context, bar, psk-http-client, opendsu, dossier, edfs-middleware, edfs-brick-storage, bar-fs-adapter, key-ssi-resolver, adler32, pskcrypto, swarmutils, swarm-engine/bootScripts/domainBootScript:boot-script", "autoLoad": true, "bundleExternal": false},
+  "isolatesBoot": {"deps": "overwrite-require, dossier, key-ssi-resolver, psk-cache, pskcrypto, swarm-engine/bootScripts/IsolateBootScript:boot-script", "autoLoad": true, "bundleExternal": false},
+  "launcherBoot": {"deps": "overwrite-require, zmq_adapter, psk-security-context, bar, psk-http-client, psk-cache, opendsu, dossier, edfs-middleware, edfs-brick-storage, bar-fs-adapter, key-ssi-resolver, adler32, pskcrypto, swarmutils, syndicate, swarm-engine/bootScripts/launcherBootScript:boot-script", "autoLoad": true, "bundleExternal": false},
+  "walletBoot": {"deps": "overwrite-require, syndicate, opendsu, dossier, swarm-engine, callflow, pskcrypto, swarmutils, bar, psk-cache, psk-http-client, bar-fs-adapter, edfs-brick-storage, key-ssi-resolver, adler32, pskwallet/index.js:boot-script", "autoLoad": true, "bundleExternal": false}
+}
