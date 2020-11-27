@@ -2,10 +2,6 @@
   "workDir": ".",
   "dependencies": [
     {
-      "name": "adler32",
-      "src": "https://github.com/privatesky/adler.git"
-    },
-    {
       "name": "bar",
       "src": "https://github.com/privatesky/bar.git"
     },
