@@ -1,7 +1,7 @@
 {
   "webshims": {"deps": "overwrite-require, crypto, util, buffer", "bare": false, "bundleExternal": true, "exclude": "psklogger"},
   "pskruntime": {"deps":"callflow, swarmutils, queue, soundpubsub, swarm-engine", "autoLoad": true, "bundleExternal": false},
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, dossier, key-ssi-resolver, psk-apihub, buffer-crc32, node-fd-slicer, edfs-middleware, psk-http-client, zmq_adapter, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, bar, bar-fs-adapter, dossier, key-ssi-resolver, psk-apihub, buffer-crc32, node-fd-slicer, edfs-middleware, psk-http-client, zmq_adapter, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard",
   "consoleTools":"",
   "blockchain": "",
   "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache", "autoLoad": true, "bundleExternal":false},
