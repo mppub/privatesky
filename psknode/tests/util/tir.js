@@ -156,7 +156,7 @@ function whenAllFinished(array, handler, callback) {
 }
 
 const Tir = function () {
-    const pskApiHub = require('psk-apihub');
+    const pskApiHub = require('apihub');
     const pingPongFork = require('../../core/utils/pingpongFork');
     const openDSU = require('opendsu');
 

@@ -6,7 +6,7 @@ require("../../core/utils/pingpongFork").enableLifeLine();
 require(path.join(__dirname, '../../bundles/pskWebServer.js'));
 
 path = require("swarmutils").path;
-const API_HUB = require('psk-apihub');
+const API_HUB = require('apihub');
 const fs = require('fs');
 if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");
