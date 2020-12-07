@@ -126,8 +126,8 @@
       "src": "https://github.com/privatesky/syndicate.git"
     },
     {
-      "name": "psk-apihub",
-      "src": "https://github.com/privatesky/psk-apihub.git"
+      "name": "apihub",
+      "src": "https://github.com/privatesky/apihub.git"
     },
     {
       "name": "whys",
@@ -136,6 +136,10 @@
     {
       "name": "zmq_adapter",
       "src": "https://github.com/privatesky/zmq_adapter.git"
+    },
+    {
+      "name": "psk-dbf",
+      "src": "https://github.com/privatesky/psk-dbf.git"
     },
     {
       "name": "psk-integration-testing",
