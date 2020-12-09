@@ -1,6 +1,7 @@
 const path = require('path');
 
-require(path.join(__dirname, "../../bundles/pskruntime"));
+require(path.join(__dirname, "../../bundles/testsRuntime"));
+
 const argvParser = require(path.join(__dirname, "./argumentsParserUtil"));
 
 process.processedArgv = {
