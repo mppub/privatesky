@@ -6,7 +6,6 @@ const path = require('path');
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
 process.env.PSK_CONFIG_LOCATION = process.env.PSK_ROOT_INSTALATION_FOLDER + "/conf";
 
-require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/edfsBar.js")));
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")));
 
 const os = require('os');
@@ -359,19 +358,63 @@ const Tir = function () {
                 return
             }
 
-            if (!$$.securityContext) {
-                $$.securityContext = require("psk-security-context").createSecurityContext();
+            const opendsu = require("opendsu");
+            const consts = opendsu.constants;
+            const system = opendsu.loadApi("system");
+            const nodeUrl = `http://localhost:${virtualMQPort}`;
+            system.setEnvironmentVariable(consts.BDNS_ROOT_HOSTS, nodeUrl);
+            process.env[consts.BDNS_ROOT_HOSTS] = nodeUrl;
+            const bdns = {
+                "default": {
+                    "replicas": [],
+                    "brickStorages": [
+                        nodeUrl
+                    ],
+                    "anchoringServices": [
+                        nodeUrl
+                    ]
+                }
             }
 
-            $$.securityContext.generateIdentity((err, agentId) => {
-                if (err) {
+            storeDBNS(storageFolder, bdns, (err)=>{
+                if(err){
                     return callback(err);
                 }
+               /* if (!$$.securityContext) {
+                    $$.securityContext = require("psk-security-context").createSecurityContext();
+                }
 
-                callback(undefined, virtualMQPort);
+                $$.securityContext.generateIdentity((err, agentId) => {
+                    if (err) {
+                        return callback(err);
+                    }*/
+
+                    callback(undefined, virtualMQPort);
+                /*});*/
             });
 
         });
+    }
+
+    function storeDBNS(rootFolder, content, callback){
+        const fsName = "fs";
+        const fs = require(fsName);
+
+        const pathName = "path";
+        const path = require(pathName);
+
+        if(typeof content === "object"){
+            content = JSON.stringify(content);
+        }
+
+        let path2Folder= path.join(rootFolder, "external-volume/config");
+        fs.mkdir(path2Folder, { recursive: true }, (err) => {
+            if (err) {
+                return callback(err);
+            }
+            fs.writeFile(path.join(path2Folder, "bdns.hosts"), content, callback);
+        });
+
     }
 
     this.launchVirtualMQNode = launchVirtualMQNode;
