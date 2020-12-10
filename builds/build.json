@@ -29,5 +29,9 @@
   "launcherBoot": {"deps": "overwrite-require, zmq_adapter, psk-security-context, bar, psk-http-client, psk-cache, opendsu, dossier, edfs-middleware, edfs-brick-storage, bar-fs-adapter, key-ssi-resolver, pskcrypto, swarmutils, syndicate, swarm-engine/bootScripts/launcherBootScript:boot-script",
     "autoLoad": true,
     "bundleExternal": false
+  },
+  "testRunnerBoot": {
+    "deps":"overwrite-require, swarmutils",
+    "bundleExternal": false
   }
 }
