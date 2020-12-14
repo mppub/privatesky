@@ -1,0 +1,11 @@
+{
+  "default": {
+      "replicas": [],
+      "brickStorages": [
+        "$ORIGIN"
+      ],
+      "anchoringServices": [
+        "$ORIGIN"
+      ]
+    }
+}
