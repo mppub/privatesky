@@ -4,7 +4,6 @@
  */
 const path = require('path');
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
-process.env.PSK_CONFIG_LOCATION = process.env.PSK_ROOT_INSTALATION_FOLDER + "/conf";
 
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")));
 
@@ -362,6 +361,7 @@ const Tir = function () {
             const consts = opendsu.constants;
             const system = opendsu.loadApi("system");
             const nodeUrl = `http://localhost:${virtualMQPort}`;
+
             system.setEnvironmentVariable(consts.BDNS_ROOT_HOSTS, nodeUrl);
             process.env[consts.BDNS_ROOT_HOSTS] = nodeUrl;
             const bdns = {
@@ -408,6 +408,9 @@ const Tir = function () {
         }
 
         let path2Folder= path.join(rootFolder, "external-volume/config");
+        //we define the PSK_CONFIG_LOCATION according to our test folder structure
+        process.env.PSK_CONFIG_LOCATION = path2Folder;
+
         fs.mkdir(path2Folder, { recursive: true }, (err) => {
             if (err) {
                 return callback(err);
