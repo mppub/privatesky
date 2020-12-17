@@ -1,0 +1,223 @@
+{
+  "workDir": ".",
+  "dependencies": [
+    {
+      "name": "bar",
+      "src": "https://github.com/privatesky/bar.git"
+    },
+    {
+      "name": "bar-fs-adapter",
+      "src": "https://github.com/privatesky/bar-fs-adapter.git"
+    },
+    {
+      "name": "blockchain",
+      "src": "https://github.com/privatesky/blockchain.git"
+    },
+    {
+      "name": "buffer-crc32",
+      "src": "https://github.com/privatesky/buffer-crc32.git"
+    },
+    {
+      "name": "callflow",
+      "src": "https://github.com/privatesky/callflow.git"
+    },
+    {
+      "name": "choreo",
+      "src": "https://github.com/privatesky/choreo.git"
+    },
+    {
+      "name": "dsu-wizard",
+      "src": "https://github.com/privatesky/dsu-wizard.git"
+    },
+    {
+      "name": "dossier",
+      "src": "https://github.com/privatesky/dossier.git"
+    },
+    {
+      "name": "double-check",
+      "src": "https://github.com/privatesky/double-check.git"
+    },
+    {
+      "name": "edfs-brick-storage",
+      "src": "https://github.com/privatesky/edfs-brick-storage.git"
+    },
+    {
+      "name": "edfs-middleware",
+      "src": "https://github.com/privatesky/edfs-middleware.git"
+    },
+    {
+      "name": "key-ssi-resolver",
+      "src": "https://github.com/privatesky/key-ssi-resolver.git"
+    },
+    {
+      "name": "node-fd-slicer",
+      "src": "https://github.com/privatesky/node-fd-slicer.git"
+    },
+    {
+      "name": "opendsu",
+      "src": "https://github.com/privatesky/opendsu.git"
+    },
+    {
+      "name": "overwrite-require",
+      "src": "https://github.com/privatesky/overwrite-require.git"
+    },
+    {
+      "name": "psk-bindable-model",
+      "src": "https://github.com/privatesky/psk-bindable-model.git"
+    },
+    {
+      "name": "pskbuffer",
+      "src": "https://github.com/privatesky/pskbuffer.git"
+    },
+    {
+      "name": "pskcrypto",
+      "src": "https://github.com/privatesky/pskcrypto.git"
+    },
+    {
+      "name": "pskdb",
+      "src": "https://github.com/privatesky/pskdb.git"
+    },
+    {
+      "name": "psk-http-client",
+      "src": "https://github.com/privatesky/psk-http-client.git"
+    },
+    {
+      "name": "pskisolates",
+      "src": "https://github.com/privatesky/pskisolates.git"
+    },
+    {
+      "name": "psklogger",
+      "src": "https://github.com/privatesky/psklogger.git"
+    },
+    {
+      "name": "psk-cache",
+      "src": "https://github.com/privatesky/psk-cache.git"
+    },
+    {
+      "name": "psk-security-context",
+      "src": "https://github.com/privatesky/psk-security-context.git"
+    },
+    {
+      "name": "pskwallet",
+      "src": "https://github.com/privatesky/pskwallet.git"
+    },
+    {
+      "name": "queue",
+      "src": "https://github.com/privatesky/queue.git"
+    },
+    {
+      "name": "soundpubsub",
+      "src": "https://github.com/privatesky/soundpubsub.git"
+    },
+    {
+      "name": "ssapp-middleware",
+      "src": "https://github.com/privatesky/ssapp-middleware.git"
+    },
+    {
+      "name": "swarm-engine",
+      "src": "https://github.com/privatesky/swarm-engine.git"
+    },
+    {
+      "name": "swarmutils",
+      "src": "https://github.com/privatesky/swarmutils.git"
+    },
+    {
+      "name": "syndicate",
+      "src": "https://github.com/privatesky/syndicate.git"
+    },
+    {
+      "name": "apihub",
+      "src": "https://github.com/privatesky/apihub.git"
+    },
+    {
+      "name": "whys",
+      "src": "https://github.com/privatesky/whys.git"
+    },
+    {
+      "name": "zmq_adapter",
+      "src": "https://github.com/privatesky/zmq_adapter.git"
+    },
+    {
+      "name": "psk-dbf",
+      "src": "https://github.com/privatesky/psk-dbf.git"
+    },
+    {
+      "name": "psk-integration-testing",
+      "src": "https://github.com/privatesky/psk-integration-testing.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": "tests"
+        }
+      ]
+    },
+    {
+      "name": "psk-smoke-testing",
+      "src": "https://github.com/privatesky/psk-smoke-testing.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": "tests"
+        }
+      ]
+    },
+    {
+      "name": "psk-unit-testing",
+      "src": "https://github.com/privatesky/psk-unit-testing.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": "tests"
+        }
+      ]
+    }
+  ],
+  "prepare-release": [
+    {
+      "name": "preparing-release",
+      "actions": [
+        {
+          "type": "remove",
+          "target": "./temp-release/"
+        },
+        {
+          "type": "remove",
+          "target": "./psknode/bundles/"
+        },
+        {
+          "type": "execute",
+          "cmd": "node bin/scripts/pskbuild.js --projectMap=./builds/build.json --prod=true"
+        }
+      ]
+    },
+    {
+      "name": "psk-release",
+      "src": "http://github.com/privatesky/psk-release.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": "temp-release",
+          "options": {
+            "branch": "master"
+          }
+        },
+        {
+          "type": "remove",
+          "target": "temp-release/psk-release/psknode"
+        },
+        {
+          "type": "copy",
+          "src": "psknode",
+          "target": "temp-release/psk-release/psknode",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "remove",
+          "target": "temp-release/psk-release/psknode/domain.js"
+        }
+      ]
+    }
+  ]
+}
