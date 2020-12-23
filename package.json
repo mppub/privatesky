@@ -36,7 +36,7 @@
     "@msgpack/msgpack": "^1.8.0",
     "browserify": "^16.5.0",
     "chokidar": "^3.0.2",
-    "octopus": "git+http://git@github.com/privatesky/octopus.git#1.0.8",
+    "octopus": "git+http://git@github.com/privatesky/octopus.git",
     "source-map-support": "^0.5.13"
   },
   "scripts": {
