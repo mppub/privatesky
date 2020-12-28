@@ -38,14 +38,6 @@
       "src": "https://github.com/privatesky/double-check.git"
     },
     {
-      "name": "edfs-brick-storage",
-      "src": "https://github.com/privatesky/edfs-brick-storage.git"
-    },
-    {
-      "name": "edfs-middleware",
-      "src": "https://github.com/privatesky/edfs-middleware.git"
-    },
-    {
       "name": "key-ssi-resolver",
       "src": "https://github.com/privatesky/key-ssi-resolver.git"
     },
