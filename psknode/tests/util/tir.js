@@ -421,6 +421,7 @@ const Tir = function () {
     }
 
     this.launchVirtualMQNode = launchVirtualMQNode;
+    this.launchApiHubTestNode = launchVirtualMQNode;
 
     function launchLocalMonitor(maxTries, onBootMessage) {
         if (typeof maxTries === 'function') {
