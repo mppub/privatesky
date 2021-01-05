@@ -8,7 +8,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "38aba287699680170c0df31e369f24615cbe5190"
+                    "commit": "1aa7d808c8947c18b9832609648e611be5816317"
                 }
             ]
         },
@@ -19,7 +19,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "e3ee25b921d24f69723e35fe3f40b73171102e3f"
+                    "commit": "38f4ddc628d047112713c30513b2e1fcfe4c033a"
                 }
             ]
         },
@@ -74,7 +74,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "460f51457424fce15410ef7817786c9540af5fb5"
+                    "commit": "cd0549f966ac2b414bec723212d9c64f342b4dd2"
                 }
             ]
         },
@@ -101,35 +101,13 @@
             ]
         },
         {
-            "name": "edfs-brick-storage",
-            "src": "https://github.com/privatesky/edfs-brick-storage.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": "modules",
-                    "commit": "a3d7275524cd8459bf6597467ed0da941377e36e"
-                }
-            ]
-        },
-        {
-            "name": "edfs-middleware",
-            "src": "https://github.com/privatesky/edfs-middleware.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": "modules",
-                    "commit": "28ebeed3704cd303102501b2803c87d207b7ff71"
-                }
-            ]
-        },
-        {
             "name": "key-ssi-resolver",
             "src": "https://github.com/privatesky/key-ssi-resolver.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "9cf0e3ef171091acc3ec626d23b8d35c58153152"
+                    "commit": "d55449894f53bf02f33ddb4ad5fcbbf91e617372"
                 }
             ]
         },
@@ -151,7 +129,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "636550d650916ef6ea3f6342b6bd3de91a408a1b"
+                    "commit": "12f22ff0fe3783021f7c16a02e57870ab74cf50e"
                 }
             ]
         },
@@ -162,7 +140,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "983ad4e26abcf4b565cb920a544109c71b4e054d"
+                    "commit": "6bddad9872703b679e01dd5e69b771cb34171e86"
                 }
             ]
         },
@@ -195,7 +173,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "c4df5f936996d7d017f4f64aa42a6a964afe55dd"
+                    "commit": "428f6753eba842e4f0dd3990aca4065aa1532caf"
                 }
             ]
         },
@@ -316,7 +294,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "34f209aee855b721dbda56ac1cb3bb96e67c3ad3"
+                    "commit": "c66df92eec894c439ef586513e0d3e6ce6eb1232"
                 }
             ]
         },
@@ -327,7 +305,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "c418feef17ef55db4d34f92f59b9df345c250ebf"
+                    "commit": "feccc857a7ee6b6a3639c870f006e5c53dcc1da1"
                 }
             ]
         },
@@ -349,7 +327,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "b6862c4f118bf433c68982255dd72631bde4ea55"
+                    "commit": "225320581f082f8fdc856c6b671598524122e154"
                 }
             ]
         },
