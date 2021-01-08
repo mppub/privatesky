@@ -327,7 +327,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "225320581f082f8fdc856c6b671598524122e154"
+                    "commit": "79de62c92fc58c746b388dbc9d13943e4cbce7c4"
                 }
             ]
         },
