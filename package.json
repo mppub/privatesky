@@ -40,6 +40,7 @@
     "source-map-support": "^0.5.13"
   },
   "scripts": {
+    "dev-install": "node ./bin/mkDevEnv.js && npm install",
     "postinstall": "node ./node_modules/octopus/scripts/run",
     "update": "git pull && npm install",
     "clear-stash": "node bin/scripts/githelpers/gitClearStash.js .",
