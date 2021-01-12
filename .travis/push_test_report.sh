@@ -10,7 +10,7 @@ setup_git() {
 
 commit_test_report() {
   git pull --all
-  cp ../privatesky/tests/psk-smoke-testing/testReport.html tests/psk-smoke-testing/testReport.html
+  cp ../privatesky/testReport.html tests/psk-smoke-testing/testReport.html
   git add -f tests/psk-smoke-testing/testReport.html
   git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
 }
