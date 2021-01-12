@@ -5,8 +5,8 @@ cache: false
 branches:
   except:
     - test_reports
-before_script:
-  npm install zeromq@4.6.0
+install:
+  - npm run dev-install
 after_failure:
   chmod +x .travis/push_test_report.sh && .travis/push_test_report.sh
 after_success:
