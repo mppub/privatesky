@@ -41,7 +41,7 @@
   },
   "scripts": {
     "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
-   "postinstall": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run\"",
+    "postinstall": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run\"",
     "update": "git pull && npm install",
     "clear-stash": "node bin/scripts/githelpers/gitClearStash.js .",
     "prepare-release": "node ./node_modules/octopus/scripts/run prepare-release",
