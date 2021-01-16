@@ -271,7 +271,7 @@ const Tir = function () {
                             throw err;
                         }
 
-                        launcherBar.getKeySSI((err, launcherKeySSI) => {
+                        launcherBar.getKeySSIAsString((err, launcherKeySSI) => {
                             if (err) {
                                 throw err;
                             }
@@ -563,7 +563,7 @@ const Tir = function () {
                     if (err) {
                         return callback(err);
                     }
-                    archive.getKeySSI((err, keySSI) => {
+                    archive.getKeySSIAsString((err, keySSI) => {
                         callback(err, keySSI);
                     });
                 });

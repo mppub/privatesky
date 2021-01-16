@@ -82,7 +82,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                 throw err;
                             }
 
-                            constitutionBar.getKeySSI((err, keySSI) => {
+                            constitutionBar.getKeySSIAsString((err, keySSI) => {
                                 if (err) {
                                     throw err;
                                 }
@@ -105,7 +105,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                             throw err;
                         }
 
-                        launcherConfigDossier.getKeySSI((err, keySSI) => {
+                        launcherConfigDossier.getKeySSIAsString((err, keySSI) => {
                             if (err) {
                                 throw err;
                             }
@@ -125,7 +125,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                         throw err;
                                     }
 
-                                    domainConfigDossier.getKeySSI((err, domainKeySSI) => {
+                                    domainConfigDossier.getKeySSIAsString((err, domainKeySSI) => {
                                         if (err) {
                                             throw err;
                                         }
