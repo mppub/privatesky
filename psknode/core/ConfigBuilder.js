@@ -67,7 +67,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                 });
             } else {
                 let fileConfiguration = {};
-                resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, constitutionBar) => {
+                resolver.createDSU(keyssi.buildTemplateSeedSSI(DEFAULT_DOMAIN), (err, constitutionBar) => {
                     if (err) {
                         throw err;
                     }
@@ -95,7 +95,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
             }
 
             function buildDossierInfrastructure(fileConfiguration) {
-                resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, launcherConfigDossier) => {
+                resolver.createDSU(keyssi.buildTemplateSeedSSI(DEFAULT_DOMAIN), (err, launcherConfigDossier) => {
                     if (err) {
                         throw err;
                     }
@@ -115,7 +115,7 @@ function createOrUpdateConfiguration(fileConfiguration, callback) {
                                 throw err;
                             }
 
-                            resolver.createDSU(keyssi.buildSeedSSI(DEFAULT_DOMAIN), (err, domainConfigDossier) => {
+                            resolver.createDSU(keyssi.buildTemplateSeedSSI(DEFAULT_DOMAIN), (err, domainConfigDossier) => {
                                 if (err) {
                                     throw err;
                                 }
