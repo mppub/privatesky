@@ -49,3 +49,12 @@ jobs:
              .github/push_test_report.sh
         env:
           GIT_TOKEN: ${{secrets.TOKEN}}
+
+      # Pushing new release to psk-release repo
+      - name: Pushing a new release version
+        if: ${{ success() }}
+        run: |
+          chmod +x .github/publish_release.sh
+          .github/publish_release.sh
+        env:
+          GIT_TOKEN: ${{secrets.TOKEN}}

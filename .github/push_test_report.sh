@@ -13,7 +13,7 @@ commit_test_report() {
   git pull --all
   cp ../privatesky/testReport.html tests/psk-smoke-testing/testReport.html
   git add -f tests/psk-smoke-testing/testReport.html
-  git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
+  git commit --message "Github Actions build: $GITHUB_RUN_NUMBER"
 }
 
 push_to_github() {
