@@ -25,7 +25,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          token: ${{secrets.PAT}}
+          token: ${{secrets.privatesky_git_hub_pages_tests}}
 
       # install dependencies
       - name: Install dependencies (dev-install)
