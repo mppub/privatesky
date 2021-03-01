@@ -1,7 +1,7 @@
 #!/bin/sh
 
 setup_git() {
-  echo GIT_TOKEN
+  echo ${GIT_TOKEN}
   git clone https://${GIT_TOKEN}@github.com/privatesky/privatesky.git ../results > /dev/null 2>&1
   cd ../results
   git config user.email "psk.build.track@gmail.com"
