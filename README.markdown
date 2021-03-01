@@ -1,4 +1,4 @@
-
+[![TEST](https://github.com/PrivateSky/privatesky/actions/workflows/test.yml/badge.svg)](https://github.com/PrivateSky/privatesky/actions/workflows/test.yml)
 # PrivateSky
 
 The PrivateSKY platform is the result of more then 7 years of intense research in areas of distributed systems, integration, programming languages, blockchain. 
