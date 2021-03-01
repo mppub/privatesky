@@ -43,3 +43,5 @@ jobs:
         run: |
              chmod +x .github/push_test_report.sh
              .github/push_test_report.sh
+        env:
+          GIT_TOKEN: ${{secrets.TOKEN}}
