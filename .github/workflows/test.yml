@@ -38,8 +38,8 @@ jobs:
         run: npm run tests
         
       # Pushing results to test_reports branch 
-      - name: Check-out test_reports branch
+      - name: Pushing results to test_reports branch
         if: ${{ always() }}
         run: |
-             chmod +x .travis/push_test_report.sh
-             .travis/push_test_report.sh
+             chmod +x .github/push_test_report.sh
+             .github/push_test_report.sh
