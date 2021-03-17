@@ -29,7 +29,7 @@
  *
  * c. VersionRequirement - Class that provides an easy way to specify versions in the dependencies object.
  *    It captures this version as the target version and returns a function that can check if the given version
- *    matches this target version based on different strategies. For example:
+ *    matches this target version based on different storageStrategies. For example:
  *    - from(version) - it accepts any newer version
  *    - upToNextMajor(version) - it accepts versions that are newer but with the same major version
  *      (to maintain compatibility in cases where a new major version could break that,
