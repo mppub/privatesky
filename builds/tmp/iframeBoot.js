@@ -1,4 +1,5 @@
 const or = require('overwrite-require');
-or.enableForEnvironment(or.constants.BROWSER_ENVIRONMENT_TYPE);
+const env = typeof window !== "undefined" ? or.constants.BROWSER_ENVIRONMENT_TYPE : or.constants.WEB_WORKER_ENVIRONMENT_TYPE;
+or.enableForEnvironment(env);
 
 require("./iframeBoot_intermediar");

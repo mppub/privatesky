@@ -365,10 +365,24 @@ function doBrowserify(targetName, src, dest, opt, externalModules, exportsModule
 
         ((dest) => {
             out.on('finish', () => {
+                let finalTargets = typeof config.only !== "undefined" ? config.only.split(",") : Object.keys(targets);
+                const bundlePaths = finalTargets
+                    .filter((x) => targets.hasOwnProperty(x))
+                    .reduce((accum, currentTargetName) => {
+                        accum[currentTargetName] = path.join(config.output, `${currentTargetName}.js`);
+                        return accum;
+                    }, {});
+
+                const bundlePathsContent = `
+                    ;(function(global) {
+                        global.bundlePaths = ${JSON.stringify(bundlePaths)};
+                    })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+                `;
+                fs.appendFileSync(dest, bundlePathsContent);
 
                 if (typeof opt.exportedEsModule !== "undefined") {
                     let moduleName = opt.exportedEsModule;
-                    fs.appendFileSync(dest, `\nexport default ${opt.externalRequireName}('${moduleName}')`)
+                    fs.appendFileSync(dest, `\nexport default ${opt.externalRequireName}('${moduleName}')`);
                 }
 
                 if (config.externalTarget) {

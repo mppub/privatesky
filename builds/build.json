@@ -12,7 +12,7 @@
   "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, bar, bar-fs-adapter, dossier, key-ssi-resolver, apihub, buffer-crc32, node-fd-slicer, psk-http-client, zmq_adapter, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard",
   "consoleTools":"",
   "blockchain": "",
-  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache",
+  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, callflow, blockchain, syndicate",
     "bundleExternal":false,
     "sourceMap": false
   },
@@ -21,7 +21,7 @@
     "bundleExternal": false,
     "exclude": "psklogger",
     "bare": true},
-  "testsRuntime": "overwrite-require, opendsu, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter",
+  "testsRuntime": "overwrite-require, opendsu, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, callflow, blockchain, syndicate",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
   "swBoot": {"deps":"swarm-engine/bootScripts/browser/sw:sw, opendsu","autoLoad": true, "bundleExternal":true, "exclude": "psklogger"},
