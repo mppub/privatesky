@@ -59,6 +59,8 @@
     "start-vmq": "npm run build && node ./psknode/bin/scripts/basicStart.js ./psknode/bin/scripts/startZeromqProxy.js & node ./psknode/bin/scripts/basicStart.js ./psknode/bin/scripts/virtualMq.js --port=8080 --folder=\"../tmp\"",
     "generate-test-wallet": "npm run build && node ./bin/scripts/wallet/generate-test-wallet.js",
     "update-wallet-app": "node ./bin/scripts/wallet/update-wallet-app.js",
-    "freeze": "node ./node_modules/octopus/scripts/freeze"
+    "freeze": "node ./node_modules/octopus/scripts/freeze",
+    "build-contracts": "node ./node_modules/octopus/scripts/run build-contracts devmode",
+    "create-domain": "node ./node_modules/octopus/scripts/run create-domain devmode"
   }
 }

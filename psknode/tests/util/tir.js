@@ -389,11 +389,38 @@ const Tir = function () {
                         return callback(err);
                     }*/
 
-                    callback(undefined, virtualMQPort);
+                    // callback(undefined, virtualMQPort);
+                    storeServerConfig(storageFolder, (err) => {
+                        if(err){
+                            return callback(err);
+                        }
+                        callback(undefined, virtualMQPort);
+                    })
                 /*});*/
             });
 
         });
+    }
+
+    function storeServerConfig(rootFolder, callback){
+        const fsName = "fs";
+        const fs = require(fsName);
+
+        const pathName = "path";
+        const path = require(pathName);
+
+        // we need to have at least an empty server.json file in order for apihub to be loaded inside testRuntime
+        const content = JSON.stringify({});
+
+        let path2Folder= path.join(rootFolder, "external-volume/config");
+
+        fs.mkdir(path2Folder, { recursive: true }, (err) => {
+            if (err) {
+                return callback(err);
+            }
+            fs.writeFile(path.join(path2Folder, "server.json"), content, callback);
+        });
+
     }
 
     function storeDBNS(rootFolder, content, callback){

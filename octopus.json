@@ -122,6 +122,10 @@
       "src": "https://github.com/privatesky/apihub.git"
     },
     {
+      "name": "apihub-contracts",
+      "src": "https://github.com/PrivateSky/apihub-contracts.git"
+    },
+    {
       "name": "whys",
       "src": "https://github.com/privatesky/whys.git"
     },
@@ -160,6 +164,30 @@
         {
           "type": "smartClone",
           "target": "tests"
+        }
+      ]
+    }
+  ],
+  "build-contracts": [
+    {
+      "name": "apihub-contracts-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd modules/apihub-contracts && npm run build-dsu-type"
+        }
+      ]
+    }
+  ],
+  "create-domain": [
+    {
+      "name": "apihub-contracts-create-domain",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd modules/apihub-contracts && npm run create-domain"
         }
       ]
     }
