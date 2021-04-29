@@ -8,7 +8,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "c9d573c12d094e70a3ca0d3e6e39381b02b31386"
+                    "commit": "943e81379c996011f8e6f6dd888cb1fd21575136"
                 }
             ]
         },
