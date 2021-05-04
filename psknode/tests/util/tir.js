@@ -390,7 +390,7 @@ const Tir = function () {
                     }*/
 
                     // callback(undefined, virtualMQPort);
-                    storeServerConfig(storageFolder, (err) => {
+                    storeServerConfig(storageFolder, {}, (err) => {
                         if(err){
                             return callback(err);
                         }
@@ -402,26 +402,32 @@ const Tir = function () {
         });
     }
 
-    function storeServerConfig(rootFolder, callback){
+    function storeServerConfig(storageFolder, content, callback){
+        let pathToConfigFolder = path.join(storageFolder, "external-volume/config");
+        storeFile(pathToConfigFolder, "server.json", JSON.stringify(content), callback);
+    }
+
+    this.storeServerConfig = storeServerConfig;
+
+    function storeFile(storageFolder, filename, content, callback) {
         const fsName = "fs";
         const fs = require(fsName);
 
         const pathName = "path";
         const path = require(pathName);
 
-        // we need to have at least an empty server.json file in order for apihub to be loaded inside testRuntime
-        const content = JSON.stringify({});
+        console.log(`Storing file '${filename}' at ${storageFolder}...`)
 
-        let path2Folder= path.join(rootFolder, "external-volume/config");
-
-        fs.mkdir(path2Folder, { recursive: true }, (err) => {
+        fs.mkdir(storageFolder, { recursive: true }, (err) => {
             if (err) {
                 return callback(err);
             }
-            fs.writeFile(path.join(path2Folder, "server.json"), content, callback);
+            fs.writeFile(path.join(storageFolder, filename), content, callback);
         });
 
     }
+
+    this.storeFile = storeFile;
 
     function storeDBNS(rootFolder, content, callback){
         const fsName = "fs";
@@ -744,6 +750,30 @@ const Tir = function () {
     }
 
     this.buildConstitution = buildConstitution;
+
+    function runOctopusScript(scriptName, args, callback) {
+        const scriptPath = path.join(
+            process.env.PSK_ROOT_INSTALATION_FOLDER,
+            `./node_modules/octopus/scripts/${scriptName}.js`
+        );
+
+        const pskBundlesPath = "./psknode/bundles";
+    
+        const child_process = require("child_process");
+        const forkedProcess = child_process.fork(scriptPath, [`--bundles=${pskBundlesPath}`, ...args], {
+            cwd: process.env.PSK_ROOT_INSTALATION_FOLDER
+        });
+    
+        forkedProcess.on("exit", function (code) {
+            if (code !== 0) {
+                return callback(code);
+            }
+    
+            callback(null);
+        });
+    }
+
+    this.runOctopusScript = runOctopusScript;
 };
 
 module.exports = new Tir();
