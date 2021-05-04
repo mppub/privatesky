@@ -373,6 +373,24 @@ const Tir = function () {
                     "anchoringServices": [
                         nodeUrl
                     ]
+                },
+                "test1": {
+                    "replicas": [],
+                    "brickStorages": [
+                        nodeUrl
+                    ],
+                    "anchoringServices": [
+                        nodeUrl
+                    ]
+                },
+                "test2": {
+                    "replicas": [],
+                    "brickStorages": [
+                        nodeUrl
+                    ],
+                    "anchoringServices": [
+                        nodeUrl
+                    ]
                 }
             }
 
@@ -758,17 +776,17 @@ const Tir = function () {
         );
 
         const pskBundlesPath = "./psknode/bundles";
-    
+
         const child_process = require("child_process");
         const forkedProcess = child_process.fork(scriptPath, [`--bundles=${pskBundlesPath}`, ...args], {
             cwd: process.env.PSK_ROOT_INSTALATION_FOLDER
         });
-    
+
         forkedProcess.on("exit", function (code) {
             if (code !== 0) {
                 return callback(code);
             }
-    
+
             callback(null);
         });
     }
