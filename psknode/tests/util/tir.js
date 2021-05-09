@@ -374,6 +374,9 @@ const Tir = function () {
                     ],
                     "anchoringServices": [
                         nodeUrl
+                    ],
+                    "contractServices": [
+                        nodeUrl
                     ]
                 },
                 "test1": {
@@ -383,6 +386,9 @@ const Tir = function () {
                     ],
                     "anchoringServices": [
                         nodeUrl
+                    ],
+                    "contractServices": [
+                        nodeUrl
                     ]
                 },
                 "test2": {
@@ -391,6 +397,9 @@ const Tir = function () {
                         nodeUrl
                     ],
                     "anchoringServices": [
+                        nodeUrl
+                    ],
+                    "contractServices": [
                         nodeUrl
                     ]
                 }
