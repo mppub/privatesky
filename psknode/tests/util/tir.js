@@ -369,6 +369,9 @@ const Tir = function () {
             const bdns = {
                 "default": {
                     "replicas": [],
+                    "notifications": [
+                        nodeUrl
+                    ],
                     "brickStorages": [
                         nodeUrl
                     ],
@@ -381,6 +384,9 @@ const Tir = function () {
                 },
                 "test1": {
                     "replicas": [],
+                    "notifications": [
+                        nodeUrl
+                    ],
                     "brickStorages": [
                         nodeUrl
                     ],
@@ -393,6 +399,9 @@ const Tir = function () {
                 },
                 "test2": {
                     "replicas": [],
+                    "notifications": [
+                        nodeUrl
+                    ],
                     "brickStorages": [
                         nodeUrl
                     ],
