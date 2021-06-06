@@ -138,6 +138,10 @@
       "src": "https://github.com/privatesky/psk-dbf.git"
     },
     {
+      "name": "bricksledger",
+      "src": "https://github.com/privatesky/bricksledger.git"
+    },
+    {
       "name": "psk-integration-testing",
       "src": "https://github.com/privatesky/psk-integration-testing.git",
       "actions": [
