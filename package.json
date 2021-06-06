@@ -47,7 +47,6 @@
     "prepare-release": "node ./node_modules/octopus/scripts/run prepare-release",
     "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/domain_build.json && node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json",
     "watch": "node ./bin/scripts/watcher.js --watch ./ --run \"./bin/scripts/pskbuild.js\" --args=\"--projectMap=./builds/build.json\" --ignore=\"/psknode/bundles/,/builds,/tests/,/bin/\"",
-    "my-watch": "node ./bin/scripts/watcher.js --watch ./ --run \"./bin/scripts/pskbuild.js\" --args=\"--projectMap=./builds/my-build.json\" --ignore=\"/psknode/bundles/,/builds,/tests/,/bin/\"",
     "start": "node bin/scripts/serviceLauncher.js",
     "git-status": "node bin/scripts/githelpers/gitStatusCheck.js .",
     "tests": "npm run smoke-tests",
