@@ -8,7 +8,7 @@ publish_release(){
   git config user.name "PSK Build Tracker"
   git add .
   git add -A
-  git commit --message "Github Actions update(Build #GITHUB_RUN_NUMBER)"
+  git commit --message "Github Actions update(Build $GITHUB_RUN_NUMBER)"
   git pull
   git push origin master
   cd ../.. && rm -rf temp-release
