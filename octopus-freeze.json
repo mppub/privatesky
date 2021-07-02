@@ -8,7 +8,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "c9d573c12d094e70a3ca0d3e6e39381b02b31386"
+                    "commit": "ea0a35d1c29daf61e0274e93cc470d8d5334e01e"
                 }
             ]
         },
@@ -74,7 +74,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "6c6f00dae69e04f45518e20f1719b7b8b47d3763"
+                    "commit": "88f57ae1775b339a7863a0c3108143e9c6914b1b"
                 }
             ]
         },
@@ -96,7 +96,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "4d4fa5113e3c897d52c27b3134c2501431302c7d"
+                    "commit": "3d1d58187eea566bb21e239e22f3e6b98a4c4eb4"
                 }
             ]
         },
@@ -107,7 +107,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "fb84f98a5cabeae36a05d21f3aac1e65903f397d"
+                    "commit": "6b4a02b58bf0b9f3d498f9d1b1ea90d71870022e"
                 }
             ]
         },
@@ -129,7 +129,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "9fd827e700769d82316f59a26a3eaa9f96698124"
+                    "commit": "2760c5b2482901f3703246b94dcdfb93c181744a"
                 }
             ]
         },
@@ -140,7 +140,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "2d1965cd51fffadce9a8d609273693490750af54"
+                    "commit": "c28e20e7b96a54f553428a4461a9a4c838c76694"
                 }
             ]
         },
@@ -151,7 +151,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "fe3b967155927435db6395242a79dfb3ec6f923b"
+                    "commit": "528025a1023cfc670b12863c70297b3f814188ed"
                 }
             ]
         },
@@ -173,7 +173,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "bfd48ab8d792d97c7d87fb9231871ded0f675bfc"
+                    "commit": "bcac52a238879bded642c55d4e9103f0ef84fbeb"
                 }
             ]
         },
@@ -294,7 +294,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "a5bbb3a1485efdad00805bb2affa2744ff57391a"
+                    "commit": "6c3c3b542c4aa80834045a18230d1b401c5b0183"
                 }
             ]
         },
@@ -305,7 +305,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "feccc857a7ee6b6a3639c870f006e5c53dcc1da1"
+                    "commit": "c08c713ce4abe71d6dd760a2e6673f05a3381a82"
                 }
             ]
         },
@@ -327,7 +327,18 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "e19c0b74716b69ddb7f1b841d03963df759d9d62"
+                    "commit": "e70c7cdb383c922a827b27988cf202b1b17abfcd"
+                }
+            ]
+        },
+        {
+            "name": "apihub-contracts",
+            "src": "https://github.com/PrivateSky/apihub-contracts.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": "modules",
+                    "commit": "18c4a469c9f5bd28baa9b8e4e49e5e9a0fad1220"
                 }
             ]
         },
@@ -365,6 +376,17 @@
             ]
         },
         {
+            "name": "bricksledger",
+            "src": "https://github.com/privatesky/bricksledger.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": "modules",
+                    "commit": "dd1382ed15cd3b122e9e5f84479c9222f4cad1a1"
+                }
+            ]
+        },
+        {
             "name": "psk-integration-testing",
             "src": "https://github.com/privatesky/psk-integration-testing.git",
             "actions": [
@@ -382,7 +404,7 @@
                 {
                     "type": "smartClone",
                     "target": "tests",
-                    "commit": "d1cc11809edc5de0472655f19c1dae9d325fd19b"
+                    "commit": "5f1cb20e9d9c23ce40991539449244dabc4b69c9"
                 }
             ]
         },
@@ -394,6 +416,30 @@
                     "type": "smartClone",
                     "target": "tests",
                     "commit": "87557a101dc8c5ba42adbfc82e17f0f568a8c071"
+                }
+            ]
+        }
+    ],
+    "build-contracts": [
+        {
+            "name": "apihub-contracts-build",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd modules/apihub-contracts && npm run build-dsu-type"
+                }
+            ]
+        }
+    ],
+    "create-domain": [
+        {
+            "name": "apihub-contracts-create-domain",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd modules/apihub-contracts && npm run create-domain"
                 }
             ]
         }
