@@ -28,7 +28,13 @@ function getCompleteOptions(options, defaultOptions) {
     if (completeOptions.includeDefaultDomains) {
         const defaultDomains = ["default", "test1", "test2"];
         defaultDomains
-            .filter((domain) => !completeOptions.domains.includes(domain))
+            .filter((defaultDomainName) => {
+                const isDomainAlreadyConfigured = completeOptions.domains.some((existingDomain) => {
+                    existingDomain = getDomainNameAndConfig(existingDomain);
+                    return existingDomain.name === defaultDomainName;
+                });
+                return !isDomainAlreadyConfigured;
+            })
             .forEach((domain) => completeOptions.domains.push(domain));
     }
 
@@ -85,7 +91,8 @@ function getBDNSEntries(options, nodeUrl, validators) {
         // constructor BDNS from configured domains
         bdns = {};
         options.domains.forEach((domain) => {
-            bdns[domain] = {
+            domain = getDomainNameAndConfig(domain);
+            bdns[domain.name] = {
                 replicas: [],
                 notifications: [nodeUrl],
                 brickStorages: [nodeUrl],
