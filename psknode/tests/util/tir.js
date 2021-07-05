@@ -2,163 +2,24 @@
  * Test Infrastructure Runner
  *
  */
-const path = require('path');
+const path = require("path");
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
 
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")));
 
-const os = require('os');
-const fs = require('fs');
+const os = require("os");
+const fs = require("fs");
 const pskPath = require("swarmutils").path;
 
-const createKey = function (name) {
-    let parsed = '' + name;
-    parsed.replace(/^[A-Za-z0-9 ]+/g, ' ');
-    return parsed
-        .split(' ')
-        .map((word, idx) =>
-            idx === 0
-                ? word.toLocaleLowerCase()
-                : word.substr(0, 1).toLocaleUpperCase() + word.toLowerCase().substr(1)
-        )
-        .join('');
-};
+const { getRandomPort, createKey, createConstitution, whenAllFinished, buildConstitution } = require("./tir-utils");
+const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
 
-function createConstitutionFromSources(sources, options, callback) {
-    const child_process = require('child_process');
-    const path = require('path');
-    const fs = require('fs');
-
-    let pskBuildPath = path.resolve(path.join(__dirname, '../../psknode/bin/scripts/pskbuild.js'));
-    if (typeof process.env.PSK_ROOT_INSTALATION_FOLDER !== "undefined") {
-        pskBuildPath = path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, 'psknode/bin/scripts/pskbuild.js'));
-    }
-
-    let internalOptions = {
-        constitutionName: 'domain',
-        outputFolder: null,
-        cleanupTmpDir: true
-    };
-
-    if (typeof sources === 'string') {
-        sources = [sources];
-    }
-
-    if (typeof options === 'function') {
-        callback = options;
-    } else if (typeof options === 'string') {
-        internalOptions.outputFolder = options;
-    } else if (typeof options === 'object') {
-        Object.assign(internalOptions, options);
-    }
-
-    let sourcesNames = [];
-    let sourcesPaths = [];
-
-    if (sources && sources.length && sources.length > 0) {
-        sourcesNames = sources.map(source => path.basename(source));
-        sourcesPaths = sources.map(source => path.dirname(source));
-    }
-
-    sourcesNames = sourcesNames.join(',');
-    sourcesPaths = sourcesPaths.join(',');
-
-    const projectMap = {
-        [internalOptions.constitutionName]: {"deps": sourcesNames, "autoLoad": true},
-    };
-
-    const dc = require("double-check");
-    dc.createTestFolder('PSK_DOMAIN-', (err, tmpFolder) => {
-        if (err) {
-            return callback(err);
-        }
-
-        const projectMapPath = path.join(tmpFolder, 'projectMap.json');
-        fs.writeFile(projectMapPath, JSON.stringify(projectMap), 'utf8', (err) => {
-            if (err) {
-                return callback(err);
-            }
-
-            let outputFolder = null;
-
-            if (internalOptions.outputFolder) {
-                outputFolder = internalOptions.outputFolder;
-            } else {
-                internalOptions.cleanupTmpDir = false;
-                outputFolder = tmpFolder;
-            }
-
-            child_process.exec(`node ${pskBuildPath} --projectMap=${projectMapPath} --source=${sourcesPaths} --output=${outputFolder} --input=${tmpFolder}`, (err) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                callback(undefined, path.join(outputFolder, `${internalOptions.constitutionName}.js`));
-
-                if (internalOptions.cleanupTmpDir) {
-                    fs.rmdir(tmpFolder, {recursive: true}, (err) => {
-                        if (err) {
-                            console.warn(`Failed to delete temporary folder "${tmpFolder}"`);
-                        }
-                    });
-                }
-            });
-        });
-    });
-}
-
-function createConstitution(prefix, describer, options, constitutionSourcesFolder, callback) {
-    constitutionSourcesFolder = constitutionSourcesFolder || [];
-
-    if (typeof constitutionSourcesFolder === 'string') {
-        constitutionSourcesFolder = [constitutionSourcesFolder];
-    }
-
-    const contents = buildConstitutionFromDescription(describer, options);
-
-    if (contents && contents !== '') {
-        const tempConstitutionFolder = path.join(prefix, 'tmpConstitution');
-        const file = path.join(tempConstitutionFolder, 'index.js');
-
-        fs.mkdirSync(tempConstitutionFolder, {recursive: true});
-        fs.writeFileSync(file, contents);
-        constitutionSourcesFolder.push(tempConstitutionFolder);
-    }
-
-    //console.log('[TIR] Will construct constitution from', constitutionSourcesFolder);
-    createConstitutionFromSources(constitutionSourcesFolder, prefix, callback);
-}
-
-
-function whenAllFinished(array, handler, callback) {
-    let tasksLeft = array.length;
-
-    if (tasksLeft === 0) {
-        callback();
-    }
-
-    for (const task of array) {
-        handler(task, (err) => {
-            tasksLeft--;
-
-            if (err) {
-                tasksLeft = -1;
-                return callback(err);
-            }
-
-            if (tasksLeft === 0) {
-                callback(undefined);
-            }
-        });
-    }
-}
-
-const Tir = function () {    
-    const pingPongFork = require('../../core/utils/pingpongFork');
-    const openDSU = require('opendsu');
+const Tir = function () {
+    const pingPongFork = require("../../core/utils/pingpongFork");
+    const openDSU = require("opendsu");
 
     const domainConfigs = {};
-    const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), 'psk_'));
+    const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
 
     let testerNode = null;
     let virtualMQNode = null;
@@ -176,15 +37,15 @@ const Tir = function () {
      * @returns SwarmDescriber
      */
     this.addDomain = function (domainName, agents, constitutionSourceFolder, bundlesSourceFolder) {
-        let workspace = path.join(rootFolder, 'nodes', createKey(domainName));
+        let workspace = path.join(rootFolder, "nodes", createKey(domainName));
         domainConfigs[domainName] = {
             name: domainName,
             agents,
             /*constitution: {},*/
             constitutionSourceFolder,
-            bundlesSourceFolder: bundlesSourceFolder || path.resolve(path.join(__dirname, '../../bundles')),
+            bundlesSourceFolder: bundlesSourceFolder || path.resolve(path.join(__dirname, "../../bundles")),
             workspace: workspace,
-            blockchain: path.join(workspace, 'conf')
+            blockchain: path.join(workspace, "conf"),
         };
     };
 
@@ -201,14 +62,14 @@ const Tir = function () {
         }
 
         if (testerNode !== null) {
-            throw new Error('Test node already launched!');
+            throw new Error("Test node already launched!");
         }
 
         if (virtualMQNode !== null) {
-            throw new Error('VirtualMQ node already launched!');
+            throw new Error("VirtualMQ node already launched!");
         }
 
-        console.info('[TIR] setting working folder root', rootFolder);
+        console.info("[TIR] setting working folder root", rootFolder);
 
         const assert = require("double-check").assert;
         assert.addCleaningFunction(() => {
@@ -225,16 +86,17 @@ const Tir = function () {
                 endpoints: [
                     {
                         endpoint: `http://localhost:${virtualMQPort}`,
-                        type: 'brickStorage'
+                        type: "brickStorage",
                     },
                     {
                         endpoint: `http://localhost:${virtualMQPort}`,
-                        type: 'anchorService'
-                    }
-                ]
-            })
+                        type: "anchorService",
+                    },
+                ],
+            });
 
-            if (Object.keys(domainConfigs).length === 0) { // no domain added
+            if (Object.keys(domainConfigs).length === 0) {
+                // no domain added
                 prepareTeardownTimeout();
                 callable(undefined, virtualMQPort);
 
@@ -243,9 +105,9 @@ const Tir = function () {
 
             launchLocalMonitor(callCallbackWhenAllDomainsStarted);
 
-            fs.mkdirSync(path.join(rootFolder, 'nodes'), {recursive: true});
+            fs.mkdirSync(path.join(rootFolder, "nodes"), { recursive: true });
 
-            const fakeDomainFile = path.join(rootFolder, 'domain.js');
+            const fakeDomainFile = path.join(rootFolder, "domain.js");
             fs.writeFileSync(fakeDomainFile, "console.log('domain.js loaded.')");
 
             const defaultConstitutionBundlesPath = [
@@ -253,7 +115,7 @@ const Tir = function () {
                 path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/edfsBar.js")),
                 path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/blockchain.js")),
                 path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")),
-                fakeDomainFile
+                fakeDomainFile,
             ];
 
             EDFS.createDSU("Bar", (err, launcherBar) => {
@@ -293,10 +155,10 @@ const Tir = function () {
                                         path.resolve(path.join(__dirname, "../../core/launcher.js")),
                                         [seed, rootFolder],
                                         {
-                                            stdio: 'inherit',
+                                            stdio: "inherit",
                                             env: {
-                                                PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`
-                                            }
+                                                PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`,
+                                            },
                                         }
                                     );
 
@@ -306,7 +168,7 @@ const Tir = function () {
                             });
                         });
                     });
-                })
+                });
             });
         });
 
@@ -326,231 +188,60 @@ const Tir = function () {
                     setTimeout(() => this.tearDown(1), tearDownAfter);
                 }
             }, 1000);
-        }
+        };
     };
 
     function launchVirtualMQNode(maxTries, storageFolder, callback) {
-
-        if (typeof storageFolder === "function") {
+        let config = {};
+        if (typeof maxTries === "object") {
+            config = maxTries;
             callback = storageFolder;
-            storageFolder = maxTries;
-            maxTries = 100;
-        }
-
-        if (typeof maxTries === "function") {
-            callback = maxTries;
-            storageFolder = rootFolder;
-            maxTries = 100;
-        }
-
-        const virtualMQPort = getRandomPort();
-        process.env.vmq_channel_storage = storageFolder;
-
-        // need the required here, in order to be able to set a custom server.json config before apihub is started (otherwise it can't be overwritten)
-        const pskApiHub = require('apihub');
-        virtualMQNode = pskApiHub.createInstance(virtualMQPort, storageFolder, err => {
-            if (err) {
-
-                if (maxTries === 0) {
-                    throw err;
-                }
-
-                launchVirtualMQNode(maxTries - 1, storageFolder, callback);
-                return
+        } else {
+            if (typeof storageFolder === "function") {
+                callback = storageFolder;
+                storageFolder = maxTries;
+                maxTries = 100;
             }
 
-            const opendsu = require("opendsu");
-            const consts = opendsu.constants;
-            const system = opendsu.loadApi("system");
-            const nodeUrl = `http://localhost:${virtualMQPort}`;
-
-            system.setEnvironmentVariable(consts.BDNS_ROOT_HOSTS, nodeUrl);
-            process.env[consts.BDNS_ROOT_HOSTS] = nodeUrl;
-            const bdns = {
-                "default": {
-                    "replicas": [],
-                    "notifications": [
-                        nodeUrl
-                    ],
-                    "brickStorages": [
-                        nodeUrl
-                    ],
-                    "anchoringServices": [
-                        nodeUrl
-                    ],
-                    "contractServices": [
-                        nodeUrl
-                    ]
-                },
-                "test1": {
-                    "replicas": [],
-                    "notifications": [
-                        nodeUrl
-                    ],
-                    "brickStorages": [
-                        nodeUrl
-                    ],
-                    "anchoringServices": [
-                        nodeUrl
-                    ],
-                    "contractServices": [
-                        nodeUrl
-                    ]
-                },
-                "test2": {
-                    "replicas": [],
-                    "notifications": [
-                        nodeUrl
-                    ],
-                    "brickStorages": [
-                        nodeUrl
-                    ],
-                    "anchoringServices": [
-                        nodeUrl
-                    ],
-                    "contractServices": [
-                        nodeUrl
-                    ]
-                }
+            if (typeof maxTries === "function") {
+                callback = maxTries;
+                storageFolder = rootFolder;
+                maxTries = 100;
             }
 
-             storeServerConfig(storageFolder, {}, (err) => {
-                if(err){
-                    return callback(err);
-                }
-
-                storeDBNS(storageFolder, bdns, (err)=>{
-                    if(err){
-                        return callback(err);
-                    }
-                /* if (!$$.securityContext) {
-                        $$.securityContext = require("psk-security-context").createSecurityContext();
-                    }
-
-                    $$.securityContext.generateIdentity((err, agentId) => {
-                        if (err) {
-                            return callback(err);
-                        }*/
-
-                        callback(undefined, virtualMQPort);
-                        /*});*/
-                    });
-            });
-
-        });
-    }
-
-    function storeServerConfig(storageFolder, content, callback){
-        let pathToConfigFolder = path.join(storageFolder, "external-volume/config");
-        if(process.env.PSK_CONFIG_LOCATION) {
-            // custom config has already been set, so don't override it with the default empty one
-            return callback();
+            config = { maxTries, storageFolder };
         }
-        process.env.PSK_CONFIG_LOCATION = pathToConfigFolder;
-        storeFile(pathToConfigFolder, "server.json", JSON.stringify(content), callback);
-    }
 
-    this.storeServerConfig = storeServerConfig;
-
-    function storeFile(storageFolder, filename, content, callback) {
-        const fsName = "fs";
-        const fs = require(fsName);
-
-        const pathName = "path";
-        const path = require(pathName);
-
-        console.log(`Storing file '${filename}' at ${storageFolder}...`)
-
-        fs.mkdir(storageFolder, { recursive: true }, (err) => {
+        const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
+        apiHubTestNodeLauncher.launch((err, result) => {
             if (err) {
                 return callback(err);
             }
-            fs.writeFile(path.join(storageFolder, filename), content, callback);
+            const { port, node } = result;
+            virtualMQNode = node;
+            callback(null, port);
         });
-
-    }
-
-    this.storeFile = storeFile;
-
-    function storeDBNS(rootFolder, content, callback){
-        const fsName = "fs";
-        const fs = require(fsName);
-
-        const pathName = "path";
-        const path = require(pathName);
-
-        if(typeof content === "object"){
-            content = JSON.stringify(content);
-        }
-
-        let path2Folder= path.join(rootFolder, "external-volume/config");
-        //we define the PSK_CONFIG_LOCATION according to our test folder structure
-        process.env.PSK_CONFIG_LOCATION = path2Folder;
-
-        fs.mkdir(path2Folder, { recursive: true }, (err) => {
-            if (err) {
-                return callback(err);
-            }
-            fs.writeFile(path.join(path2Folder, "bdns.hosts"), content, callback);
-        });
-
-    }
-
-    this.updateBDNS = function(rootFolderOfApiHub, updateSyncFnc, callback){
-        const fsName = "fs";
-        const fs = require(fsName);
-
-        const pathName = "path";
-        const path = require(pathName);
-
-        let bdnsLocation = path.join(rootFolderOfApiHub, "external-volume/config/bdns.hosts");
-        fs.readFile(bdnsLocation, (err, bdns)=>{
-            if(err){
-                return callback(err);
-            }
-
-            try{
-                bdns = JSON.parse(bdns);
-            }catch(err){
-                return callback(err);
-            }
-
-            bdns = updateSyncFnc(bdns);
-
-            fs.writeFile(bdnsLocation, JSON.stringify(bdns), (err)=>{
-                return callback(err, bdns);
-            });
-        });
-    }
-
-    this.addDomainsInBDNS = function(rootFolderOfApiHub, domainsAsArray, callback){
-        this.updateBDNS(rootFolderOfApiHub, (bdns)=>{
-            for(let i=0; i<domainsAsArray.length; i++){
-                bdns[domainsAsArray[i]] = bdns["default"];
-            }
-            return bdns;
-        }, callback);
     }
 
     this.launchVirtualMQNode = launchVirtualMQNode;
     this.launchApiHubTestNode = launchVirtualMQNode;
 
     function launchLocalMonitor(maxTries, onBootMessage) {
-        if (typeof maxTries === 'function') {
+        if (typeof maxTries === "function") {
             onBootMessage = maxTries;
             maxTries = 100;
         }
 
-        if (typeof maxTries !== 'number' || maxTries < 0) {
+        if (typeof maxTries !== "number" || maxTries < 0) {
             maxTries = 100;
         }
 
-        const zeromqName = 'zeromq';
+        const zeromqName = "zeromq";
         const zmq = require(zeromqName);
-        const zmqReceiver = zmq.createSocket('sub');
+        const zmqReceiver = zmq.createSocket("sub");
 
-        zmqReceiver.subscribe('events.status.domains.boot');
-        zmqReceiver.on('message', onBootMessage);
+        zmqReceiver.subscribe("events.status.domains.boot");
+        zmqReceiver.on("message", onBootMessage);
 
         let portFound = false;
 
@@ -566,15 +257,14 @@ const Tir = function () {
         }
 
         if (!portFound) {
-            throw new Error('Could not find a free port for zeromq');
+            throw new Error("Could not find a free port for zeromq");
         }
 
-        console.log('[TIR] zeroMQ bound to address', `tcp://127.0.0.1:${zeroMQPort}`);
-
+        console.log("[TIR] zeroMQ bound to address", `tcp://127.0.0.1:${zeroMQPort}`);
     }
 
     function initializeSwarmEngine(port) {
-        const se = require('swarm-engine');
+        const se = require("swarm-engine");
         try {
             se.initialise();
         } catch (err) {
@@ -583,13 +273,6 @@ const Tir = function () {
 
         const powerCordToDomain = new se.SmartRemoteChannelPowerCord([`http://127.0.0.1:${port}/`]);
         $$.swarmEngine.plug("*", powerCordToDomain);
-
-    }
-
-    function getRandomPort() {
-        const min = 9000;
-        const max = 65535;
-        return Math.floor(Math.random() * (max - min) + min);
     }
 
     /**
@@ -599,9 +282,9 @@ const Tir = function () {
      * @param callback
      */
     this.buildDomainConfiguration = (domainConfig, callback) => {
-        console.info('[TIR] domain ' + domainConfig.name + ' in workspace', domainConfig.workspace);
+        console.info("[TIR] domain " + domainConfig.name + " in workspace", domainConfig.workspace);
 
-        fs.mkdirSync(domainConfig.workspace, {recursive: true});
+        fs.mkdirSync(domainConfig.workspace, { recursive: true });
 
         getConstitutionSeed((err, constitutionSeed) => {
             if (err) {
@@ -611,19 +294,19 @@ const Tir = function () {
             const zeroMQPort = getRandomPort();
             const communicationInterfaces = {
                 system: {
-                    virtualMQ: `http://127.0.0.1:${virtualMQPort}`
+                    virtualMQ: `http://127.0.0.1:${virtualMQPort}`,
                     //zeroMQ: `tcp://127.0.0.1:${zeroMQPort}`
-                }
+                },
             };
 
-            global.currentHandler.startTransaction("Domain", "add", domainConfig.name, "system", domainConfig.workspace, constitutionSeed)
+            global.currentHandler
+                .startTransaction("Domain", "add", domainConfig.name, "system", domainConfig.workspace, constitutionSeed)
                 .onReturn((err) => {
                     if (err) {
                         return callback(err);
                     }
 
                     if (domainConfig.agents && Array.isArray(domainConfig.agents) && domainConfig.agents.length > 0) {
-
                         const dossier = require("dossier");
                         dossier.load(constitutionSeed, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
                             if (err) {
@@ -632,15 +315,15 @@ const Tir = function () {
 
                             let transactionsLeft = domainConfig.agents.length + 1;
 
-                            console.info('[TIR] domain ' + domainConfig.name + ' starting defining agents...');
+                            console.info("[TIR] domain " + domainConfig.name + " starting defining agents...");
 
-                            domainConfig.agents.forEach(agentName => {
-                                console.info('[TIR] domain ' + domainConfig.name + ' agent', agentName);
-                                csbHandler.startTransaction("Agents", "add", agentName, "public_key")
-                                    .onReturn(maybeCallCallback);
+                            domainConfig.agents.forEach((agentName) => {
+                                console.info("[TIR] domain " + domainConfig.name + " agent", agentName);
+                                csbHandler.startTransaction("Agents", "add", agentName, "public_key").onReturn(maybeCallCallback);
                             });
 
-                            csbHandler.startTransaction('DomainConfigTransaction', 'add', domainConfig.name, communicationInterfaces)
+                            csbHandler
+                                .startTransaction("DomainConfigTransaction", "add", domainConfig.name, communicationInterfaces)
                                 .onReturn(maybeCallCallback);
 
                             function maybeCallCallback(err) {
@@ -659,7 +342,7 @@ const Tir = function () {
                     } else {
                         callback();
                     }
-                })
+                });
         });
 
         function getConstitutionSeed(callback) {
@@ -683,7 +366,6 @@ const Tir = function () {
         }
 
         function deployConstitutionCSB(constitutionPaths, domainName, callback) {
-
             if (typeof domainName === "function" && typeof callback === "undefined") {
                 callback = domainName;
                 domainName = "";
@@ -708,9 +390,8 @@ const Tir = function () {
                         }
 
                         if (index >= constitutionPaths.length) {
-
                             if (domainName !== "") {
-                                constitutionArchive.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, domainName, lastHandler)
+                                constitutionArchive.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, domainName, lastHandler);
                             } else {
                                 lastHandler();
                             }
@@ -719,25 +400,35 @@ const Tir = function () {
                         }
 
                         const currentPath = constitutionPaths[index];
-                        constitutionArchive.addFolder(currentPath, pskPath.join(openDSU.constants.CODE_FOLDER, openDSU.constants.CONSTITUTION_FOLDER), (err) => {
-                            if (err) {
-                                return callback(err);
-                            }
+                        constitutionArchive.addFolder(
+                            currentPath,
+                            pskPath.join(openDSU.constants.CODE_FOLDER, openDSU.constants.CONSTITUTION_FOLDER),
+                            (err) => {
+                                if (err) {
+                                    return callback(err);
+                                }
 
-                            __addNext(index + 1);
-                        });
-                    })
+                                __addNext(index + 1);
+                            }
+                        );
+                    });
                 };
                 __addNext();
             });
         }
 
         function getConstitutionFile(callback) {
-            createConstitution(domainConfig.workspace, domainConfig.constitution, undefined, domainConfig.constitutionSourceFolder, callback);
+            createConstitution(
+                domainConfig.workspace,
+                domainConfig.constitution,
+                undefined,
+                domainConfig.constitutionSourceFolder,
+                callback
+            );
         }
     };
 
-    this.getDomainConfig = domainName => {
+    this.getDomainConfig = (domainName) => {
         return domainConfigs[domainName];
     };
 
@@ -746,32 +437,32 @@ const Tir = function () {
      *
      * @param exitStatus The exit status, to exit the process.
      */
-    this.tearDown = exitStatus => {
-        console.info('[TIR] Tearing down...');
+    this.tearDown = (exitStatus) => {
+        console.info("[TIR] Tearing down...");
         if (testerNode) {
-            console.info('[TIR] Killing node', testerNode.pid);
+            console.info("[TIR] Killing node", testerNode.pid);
             try {
                 process.kill(testerNode.pid);
             } catch (e) {
-                console.info('[TIR] Node already killed', testerNode.pid);
+                console.info("[TIR] Node already killed", testerNode.pid);
             }
             testerNode = null;
         }
 
         if (virtualMQNode) {
-            console.log('[TIR] Killing VirtualMQ node', virtualMQNode.pid);
+            console.log("[TIR] Killing VirtualMQ node", virtualMQNode.pid);
             try {
-                process.kill(virtualMQNode.pid)
+                process.kill(virtualMQNode.pid);
             } catch (e) {
-                console.info('[TIR] VirtualMQ node already killed', virtualMQNode.pid);
+                console.info("[TIR] VirtualMQ node already killed", virtualMQNode.pid);
             }
         }
 
         setTimeout(() => {
             try {
-                console.info('[TIR] Removing temporary folder', rootFolder);
-                fs.rmdirSync(rootFolder, {recursive: true});
-                console.info('[TIR] Temporary folder removed', rootFolder);
+                console.info("[TIR] Removing temporary folder", rootFolder);
+                fs.rmdirSync(rootFolder, { recursive: true });
+                console.info("[TIR] Temporary folder removed", rootFolder);
             } catch (e) {
                 //just avoid to display error on console
             }
@@ -782,41 +473,81 @@ const Tir = function () {
         }, 100);
     };
 
-    function buildConstitution(path, targetArchive, callback) {
-        process.env.PSK_ROOT_INSTALATION_FOLDER = require("path").join(__dirname, "../../../");
-        createConstitutionFromSources(path, (err, fileName) => {
-            if (err) {
-                return callback(err);
-            }
-            targetArchive.addFile(fileName, pskPath.join(openDSU.constants.CONSTITUTION_FOLDER, "domain.js"), callback);
-        });
-    }
-
     this.buildConstitution = buildConstitution;
 
-    function runOctopusScript(scriptName, args, callback) {
-        const scriptPath = path.join(
-            process.env.PSK_ROOT_INSTALATION_FOLDER,
-            `./node_modules/octopus/scripts/${scriptName}.js`
-        );
+    this.launchConfigurableApiHubTestNode = (config, callback) => {
+        callback = $$.makeSaneCallback(callback);
+        this.launchConfigurableApiHubTestNodeAsync(config)
+            .then((result) => callback(undefined, result))
+            .catch((error) => callback(error));
+    };
 
-        const pskBundlesPath = "./psknode/bundles";
+    this.launchConfigurableApiHubTestNodeAsync = async (config) => {
+        if (config && typeof config !== "object") {
+            throw new Error("Invalid config specified");
+        }
+        config = config || {};
 
-        const child_process = require("child_process");
-        const forkedProcess = child_process.fork(scriptPath, [`--bundles=${pskBundlesPath}`, ...args], {
-            cwd: process.env.PSK_ROOT_INSTALATION_FOLDER
-        });
+        const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
+        const { node, ...rest } = await apiHubTestNodeLauncher.launchAsync();
+        virtualMQNode = node;
+        return rest;
+    };
 
-        forkedProcess.on("exit", function (code) {
-            if (code !== 0) {
-                return callback(code);
-            }
+    this.launchApiHubTestNodeWithContract = (contractBuildFilePath, domain, config, callback) => {
+        if (typeof config === "function") {
+            callback = config;
+            config = null;
+        }
+        if (typeof domain === "function") {
+            callback = domain;
+            config = null;
+            domain = null;
+        }
+        if (typeof contractBuildFilePath === "function") {
+            callback = contractBuildFilePath;
+            config = null;
+            domain = null;
+            contractBuildFilePath = null;
+        }
+        callback = $$.makeSaneCallback(callback);
+        this.launchApiHubTestNodeWithContractAsync(domain, config, callback)
+            .then((result) => callback(undefined, result))
+            .catch((error) => callback(error));
+    };
 
-            callback(null);
-        });
-    }
+    this.launchApiHubTestNodeWithContractAsync = async (contractBuildFilePath, domain, config) => {
+        if (!contractBuildFilePath || typeof contractBuildFilePath !== "string") {
+            throw new Error("Missing or invalid contractBuildFilePath");
+        }
+        if (typeof domain === "object") {
+            config = domain;
+            domain = null;
+        }
+        if (!domain) {
+            domain = "contract";
+        }
+        if (!config) {
+            config = {};
+        }
 
-    this.runOctopusScript = runOctopusScript;
+        config = { ...config, contractBuildFilePath, domains: [domain] };
+        const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
+        const { node, ...rest } = await apiHubTestNodeLauncher.launchAsync();
+        virtualMQNode = node;
+
+        const result = {
+            ...rest,
+            // domainConfig for contract domain
+            domainConfig: {
+                contracts: {
+                    constitution: rest.domainSeed,
+                },
+            },
+        };
+
+        return result;
+    };
 };
 
 module.exports = new Tir();
