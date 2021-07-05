@@ -29,6 +29,7 @@ const defaultOptions = {
     useWorker: false,
     bricksLedgerConfig: null,
     includeDefaultDomains: true,
+    contractBuildFilePath: null,
 };
 
 function ApiHubTestNodeLauncher(options) {
@@ -71,20 +72,28 @@ function ApiHubTestNodeLauncher(options) {
         await storeServerConfigAsync(storageFolder, serverConfig);
         await storeServerDomainConfigsAsync(storageFolder, domains);
 
-        let validatorDID = await getValidatorDIDAsync(options);
-        const validators = getValidators(options, validatorDID, nodeUrl);
+        let validatorDID;
+        let validators = [];
+
+        const isBricksLedgerRequired = !!options.contractBuildFilePath;
+        if (isBricksLedgerRequired) {
+            let validatorDID = await getValidatorDIDAsync(options);
+            validators = getValidators(options, validatorDID, nodeUrl);
+        }
 
         const bdns = getBDNSEntries(options, nodeUrl, validators);
         await storeDBNSAsync(storageFolder, bdns);
 
-        // update BDNS inside opendsu since it's cached at startup
-        const bdnsApi = require("opendsu").loadApi("bdns");
-        bdnsApi.setBDNSHosts(bdns);
+        if (isBricksLedgerRequired) {
+            // update BDNS inside opendsu since it's cached at startup and the validatorDID construction triggers the opendsu load
+            const bdnsApi = require("opendsu").loadApi("bdns");
+            bdnsApi.setBDNSHosts(bdns);
+        }
 
         try {
             let domainSeed;
             const { contractBuildFilePath, useWorker } = options;
-            if (contractBuildFilePath) {
+            if (isBricksLedgerRequired) {
                 const workerApiHubOptions = {
                     port: apiHubPort,
                     storageFolder,
@@ -117,7 +126,10 @@ function ApiHubTestNodeLauncher(options) {
                 ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, storageFolder })
                 : await createApiHubInstanceAsync(apiHubPort, storageFolder);
 
-            const validatorDIDInstance = await loadValidatorDIDInstanceAsync(validatorDID);
+            let validatorDIDInstance;
+            if (validatorDID) {
+                validatorDIDInstance = await loadValidatorDIDInstanceAsync(validatorDID);
+            }
 
             return {
                 port: apiHubPort,
