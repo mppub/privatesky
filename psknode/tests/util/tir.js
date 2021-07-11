@@ -191,25 +191,25 @@ const Tir = function () {
         };
     };
 
-    function launchVirtualMQNode(maxTries, storageFolder, callback) {
+    function launchVirtualMQNode(maxTries, rootFolder, callback) {
         let config = {};
         if (typeof maxTries === "object") {
             config = maxTries;
-            callback = storageFolder;
+            callback = rootFolder;
         } else {
-            if (typeof storageFolder === "function") {
-                callback = storageFolder;
-                storageFolder = maxTries;
+            if (typeof rootFolder === "function") {
+                callback = rootFolder;
+                rootFolder = maxTries;
                 maxTries = 100;
             }
 
             if (typeof maxTries === "function") {
                 callback = maxTries;
-                storageFolder = rootFolder;
+                rootFolder = rootFolder;
                 maxTries = 100;
             }
 
-            config = { maxTries, storageFolder };
+            config = { maxTries, rootFolder };
         }
 
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
@@ -524,26 +524,29 @@ const Tir = function () {
             config = domain;
             domain = null;
         }
-        if (!domain) {
-            domain = "contract";
-        }
         if (!config) {
             config = {};
         }
+        if (!domain && !config.domains) {
+            domain = "contract";
+            config = { ...config, domains: [domain] };
+        }
 
-        config = { ...config, contractBuildFilePath, domains: [domain] };
+        config = { ...config, contractBuildFilePath };
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
         const { node, ...rest } = await apiHubTestNodeLauncher.launchAsync();
         virtualMQNode = node;
 
+        // return the updated domainConfig for further usage inside integration tests
+        const domainConfig =
+            config.domains && config.domains[0] && typeof config.domains[0] === "object" ? config.domains[0].config : {};
+        domainConfig.contracts = domainConfig.contracts || {};
+        domainConfig.contracts.constitution = rest.domainSeed;
+
         const result = {
             ...rest,
             // domainConfig for contract domain
-            domainConfig: {
-                contracts: {
-                    constitution: rest.domainSeed,
-                },
-            },
+            domainConfig,
         };
 
         return result;

@@ -13,9 +13,9 @@ const logger = new Logger("[ApiHubTestNodeLauncherWorkerBoot]");
 
 async function buildAndCreateConstractDomain() {
     logger.info("Building and creating contract domain...");
-    const { storageFolder, contractBuildFilePath } = workerData;
-    const contractSeedPath = path.join(storageFolder, ".contract-seed");
-    const domainSeedPath = path.join(storageFolder, ".domain-seed");
+    const { rootFolder, contractBuildFilePath } = workerData;
+    const contractSeedPath = path.join(rootFolder, ".contract-seed");
+    const domainSeedPath = path.join(rootFolder, ".domain-seed");
 
     // build contract DSU type
     await runOctopusScriptAsync("buildDossier", [`--seed=${contractSeedPath}`, contractBuildFilePath]);
@@ -33,7 +33,7 @@ async function boot() {
     const { parentPort } = require("worker_threads");
 
     try {
-        const { port, storageFolder, contractBuildFilePath } = workerData;
+        const { port, rootFolder, contractBuildFilePath } = workerData;
         const pskApiHub = require("apihub");
 
         let apiHubInstance;
@@ -44,7 +44,7 @@ async function boot() {
                 }
                 resolve(result);
             };
-            apiHubInstance = pskApiHub.createInstance(port, storageFolder, callback);
+            apiHubInstance = pskApiHub.createInstance(port, rootFolder, callback);
         });
 
         const apiHubResult = await apiHubLoadedPromise;

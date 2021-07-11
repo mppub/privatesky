@@ -167,27 +167,27 @@ function buildConstitution(path, targetArchive, callback) {
     });
 }
 
-function storeFile(storageFolder, filename, content, callback) {
+function storeFile(rootFolder, filename, content, callback) {
     if (typeof callback !== "function") {
         console.trace("storefile");
     }
     callback = $$.makeSaneCallback(callback);
-    storeFileAsync(storageFolder, filename, content)
+    storeFileAsync(rootFolder, filename, content)
         .then((result) => callback(undefined, result))
         .catch((error) => callback(error));
 }
 
-async function storeFileAsync(storageFolder, filename, content) {
-    logger.info(`Storing file '${filename}' at ${storageFolder}...`);
+async function storeFileAsync(rootFolder, filename, content) {
+    logger.info(`Storing file '${filename}' at ${rootFolder}...`, content);
 
     try {
-        await mkdirAsync(storageFolder, { recursive: true });
+        await mkdirAsync(rootFolder, { recursive: true });
     } catch (error) {
-        logger.error(`Cannot create folder path ${storageFolder}`, err);
+        logger.error(`Cannot create folder path ${rootFolder}`, err);
         throw error;
     }
 
-    await writeFileAsync(path.join(storageFolder, filename), content);
+    await writeFileAsync(path.join(rootFolder, filename), content);
 }
 
 function isPortAvailable(port, callback) {

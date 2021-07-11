@@ -16,10 +16,12 @@ function getCompleteOptions(options, defaultOptions) {
             completeOptions[defaultOptionName] = defaultOptions[defaultOptionName];
         }
     });
-    if (!completeOptions.storageFolder) {
-        completeOptions.storageFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
-        logger.info(`Creating random storage folder: ${completeOptions.storageFolder}`);
+    if (!completeOptions.rootFolder) {
+        completeOptions.rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
+        logger.info(`Creating random storage folder: ${completeOptions.rootFolder}`);
     }
+
+    completeOptions.storageFolder = path.join(completeOptions.rootFolder, "external-volume");
 
     if (!completeOptions.domains) {
         completeOptions.domains = [];
@@ -41,15 +43,15 @@ function getCompleteOptions(options, defaultOptions) {
     return completeOptions;
 }
 
-function getConfigFolderPath(storageFolder) {
-    return path.join(storageFolder, "/external-volume/config");
+function getConfigFolderPath(rootFolder) {
+    return path.join(rootFolder, "/external-volume/config");
 }
 
-function storeRequiredEnvironmentVariables(storageFolder, nodeUrl) {
+function storeRequiredEnvironmentVariables(rootFolder, nodeUrl) {
     //we define the PSK_CONFIG_LOCATION according to our test folder structure
-    process.env.PSK_CONFIG_LOCATION = getConfigFolderPath(storageFolder);
+    process.env.PSK_CONFIG_LOCATION = getConfigFolderPath(rootFolder);
 
-    process.env.vmq_channel_storage = storageFolder;
+    process.env.vmq_channel_storage = rootFolder;
 
     const opendsu = require("opendsu");
     const consts = opendsu.constants;
@@ -140,7 +142,7 @@ function getDomainNameAndConfig(domain) {
     return { name: domainName, config: domainConfig };
 }
 
-async function updateDomainConfigsWithContractConstitutionAsync(storageFolder, domains, domainSeed) {
+async function updateDomainConfigsWithContractConstitutionAsync(rootFolder, domains, domainSeed) {
     logger.info("Updating domain configs...");
     const updatedDomainConfigs = domains.map((domain) => {
         const { name, config } = getDomainNameAndConfig(domain);
@@ -151,16 +153,16 @@ async function updateDomainConfigsWithContractConstitutionAsync(storageFolder, d
 
         return { name, config };
     });
-    await storeServerDomainConfigsAsync(storageFolder, updatedDomainConfigs);
+    await storeServerDomainConfigsAsync(rootFolder, updatedDomainConfigs);
 }
 
-async function storeServerConfigAsync(storageFolder, content) {
-    let configFolderPath = getConfigFolderPath(storageFolder);
+async function storeServerConfigAsync(rootFolder, content) {
+    let configFolderPath = getConfigFolderPath(rootFolder);
     await storeFileAsync(configFolderPath, "apihub.json", JSON.stringify(content));
 }
 
-async function storeServerDomainConfigsAsync(storageFolder, domains) {
-    let configFolderPath = getConfigFolderPath(storageFolder);
+async function storeServerDomainConfigsAsync(rootFolder, domains) {
+    let configFolderPath = getConfigFolderPath(rootFolder);
     const domainConfigsFolderPath = path.join(configFolderPath, "domains");
     for (let index = 0; index < domains.length; index++) {
         const domain = domains[index];
@@ -170,7 +172,7 @@ async function storeServerDomainConfigsAsync(storageFolder, domains) {
     }
 }
 
-async function storeDBNSAsync(storageFolder, content) {
+async function storeDBNSAsync(rootFolder, content) {
     let bdnsEntries = [];
     if (typeof content === "object") {
         bdnsEntries = Object.keys(content).map((domain) => {
@@ -182,7 +184,7 @@ async function storeDBNSAsync(storageFolder, content) {
         content = JSON.stringify(content);
     }
 
-    let configFolderPath = getConfigFolderPath(storageFolder);
+    let configFolderPath = getConfigFolderPath(rootFolder);
 
     await mkdirAsync(configFolderPath, { recursive: true });
     await writeFileAsync(path.join(configFolderPath, "bdns.hosts"), content);

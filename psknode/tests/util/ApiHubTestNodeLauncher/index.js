@@ -20,7 +20,7 @@ const logger = new Logger("[TIR]");
 
 const defaultOptions = {
     maxTries: 100,
-    storageFolder: null,
+    rootFolder: null,
     serverConfig: {},
     domains: null,
     bdns: null,
@@ -40,7 +40,7 @@ function ApiHubTestNodeLauncher(options) {
     options = getCompleteOptions(options, defaultOptions);
     logger.info("Using the following options for launcher", options);
 
-    let { maxTries, storageFolder, port, serverConfig, domains } = options;
+    let { maxTries, rootFolder, storageFolder, port, serverConfig, domains } = options;
 
     this.launch = (callback) => {
         callback = $$.makeSaneCallback(callback);
@@ -67,22 +67,22 @@ function ApiHubTestNodeLauncher(options) {
 
         const nodeUrl = `http://localhost:${apiHubPort}`;
 
-        storeRequiredEnvironmentVariables(storageFolder, nodeUrl);
+        storeRequiredEnvironmentVariables(rootFolder, nodeUrl);
 
-        await storeServerConfigAsync(storageFolder, serverConfig);
-        await storeServerDomainConfigsAsync(storageFolder, domains);
+        await storeServerConfigAsync(rootFolder, serverConfig);
+        await storeServerDomainConfigsAsync(rootFolder, domains);
 
         let validatorDID;
         let validators = [];
 
         const isBricksLedgerRequired = !!options.contractBuildFilePath;
         if (isBricksLedgerRequired) {
-            let validatorDID = await getValidatorDIDAsync(options);
+            validatorDID = await getValidatorDIDAsync(options);
             validators = getValidators(options, validatorDID, nodeUrl);
         }
 
         const bdns = getBDNSEntries(options, nodeUrl, validators);
-        await storeDBNSAsync(storageFolder, bdns);
+        await storeDBNSAsync(rootFolder, bdns);
 
         if (isBricksLedgerRequired) {
             // update BDNS inside opendsu since it's cached at startup and the validatorDID construction triggers the opendsu load
@@ -96,14 +96,14 @@ function ApiHubTestNodeLauncher(options) {
             if (isBricksLedgerRequired) {
                 const workerApiHubOptions = {
                     port: apiHubPort,
-                    storageFolder,
+                    rootFolder,
                     contractBuildFilePath,
                 };
 
                 const workerResult = await createApiHubInstanceWorkerAsync(workerApiHubOptions);
                 domainSeed = workerResult.domainSeed;
 
-                await updateDomainConfigsWithContractConstitutionAsync(storageFolder, domains, domainSeed);
+                await updateDomainConfigsWithContractConstitutionAsync(rootFolder, domains, domainSeed);
 
                 // wait until the port is cleared by the worker
                 let portUsageCheckRetries = 10;
@@ -123,8 +123,8 @@ function ApiHubTestNodeLauncher(options) {
             }
 
             const apiHubNode = useWorker
-                ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, storageFolder })
-                : await createApiHubInstanceAsync(apiHubPort, storageFolder);
+                ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, rootFolder })
+                : await createApiHubInstanceAsync(apiHubPort, rootFolder);
 
             let validatorDIDInstance;
             if (validatorDID) {
@@ -134,6 +134,7 @@ function ApiHubTestNodeLauncher(options) {
             return {
                 port: apiHubPort,
                 node: apiHubNode,
+                rootFolder,
                 storageFolder,
                 domainSeed,
                 validatorDID,
