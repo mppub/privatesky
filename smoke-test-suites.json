@@ -1,3 +1,3 @@
 {
-    "testDirs": ["./tests/psk-smoke-testing", "./modules/opendsu/tests", "./modules/apihub/tests"]
+    "testDirs": ["./tests/psk-smoke-testing", "./modules/opendsu/tests", "./modules/apihub/tests", "./modules/bricksledger/tests"]
 }
