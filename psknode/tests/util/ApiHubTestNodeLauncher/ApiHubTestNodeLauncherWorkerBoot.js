@@ -33,7 +33,12 @@ async function boot() {
     const { parentPort } = require("worker_threads");
 
     try {
-        const { port, rootFolder, contractBuildFilePath } = workerData;
+        const { port, rootFolder, contractBuildFilePath, disableLogging } = workerData;
+        if(disableLogging) {
+            console.log = () => {};
+            console.error = () => {};
+        }
+
         const pskApiHub = require("apihub");
 
         let apiHubInstance;

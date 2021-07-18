@@ -30,6 +30,7 @@ const defaultOptions = {
     bricksLedgerConfig: null,
     includeDefaultDomains: true,
     contractBuildFilePath: null,
+    onBeforeServerStart: null,
 };
 
 function ApiHubTestNodeLauncher(options) {
@@ -69,16 +70,22 @@ function ApiHubTestNodeLauncher(options) {
 
         storeRequiredEnvironmentVariables(rootFolder, nodeUrl);
 
-        await storeServerConfigAsync(rootFolder, serverConfig);
-        await storeServerDomainConfigsAsync(rootFolder, domains);
-
         let validatorDID;
         let validators = [];
+
+        serverConfig.host = "localhost";
+        serverConfig.port = apiHubPort;
+
+        await storeServerConfigAsync(rootFolder, serverConfig);
+        await storeServerDomainConfigsAsync(rootFolder, domains);
 
         const isBricksLedgerRequired = !!options.contractBuildFilePath;
         if (isBricksLedgerRequired) {
             validatorDID = await getValidatorDIDAsync(options);
             validators = getValidators(options, validatorDID, nodeUrl);
+
+            serverConfig.validatorDID = validatorDID;
+            await storeServerConfigAsync(rootFolder, serverConfig);
         }
 
         const bdns = getBDNSEntries(options, nodeUrl, validators);
@@ -98,6 +105,7 @@ function ApiHubTestNodeLauncher(options) {
                     port: apiHubPort,
                     rootFolder,
                     contractBuildFilePath,
+                    disableLogging: true,
                 };
 
                 const workerResult = await createApiHubInstanceWorkerAsync(workerApiHubOptions);
@@ -122,18 +130,13 @@ function ApiHubTestNodeLauncher(options) {
                 }
             }
 
-            const apiHubNode = useWorker
-                ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, rootFolder })
-                : await createApiHubInstanceAsync(apiHubPort, rootFolder);
-
             let validatorDIDInstance;
             if (validatorDID) {
                 validatorDIDInstance = await loadValidatorDIDInstanceAsync(validatorDID);
             }
 
-            return {
+            const result = {
                 port: apiHubPort,
-                node: apiHubNode,
                 rootFolder,
                 storageFolder,
                 domainSeed,
@@ -141,6 +144,22 @@ function ApiHubTestNodeLauncher(options) {
                 validatorURL: nodeUrl,
                 validatorDIDInstance,
             };
+
+            if (typeof options.onBeforeServerStart === "function") {
+                const onBeforeResult = options.onBeforeServerStart(result);
+                if (onBeforeResult instanceof Promise) {
+                    // await for promise execution
+                    await onBeforeResult;
+                }
+            }
+
+            const apiHubNode = useWorker
+                ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, rootFolder })
+                : await createApiHubInstanceAsync(apiHubPort, rootFolder);
+
+            result.node = apiHubNode;
+
+            return result;
         } catch (error) {
             logger.error(`Failed to start ApiHub on port ${apiHubPort}`, error);
             maxTries--;

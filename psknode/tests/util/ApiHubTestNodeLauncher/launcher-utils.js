@@ -9,6 +9,8 @@ const logger = new Logger("[TIR]");
 const mkdirAsync = $$.promisify(fs.mkdir);
 const writeFileAsync = $$.promisify(fs.writeFile);
 
+let validatorDIDCount = 0;
+
 function getCompleteOptions(options, defaultOptions) {
     const completeOptions = { ...options };
     Object.keys(defaultOptions).forEach((defaultOptionName) => {
@@ -72,7 +74,7 @@ async function getValidatorDIDAsync(options) {
     let validatorDID = options.validatorDID;
     if (!validatorDID) {
         const w3cDID = require("opendsu").loadApi("w3cdid");
-        const DID = await $$.promisify(w3cDID.createIdentity)("demo", "id");
+        const DID = await $$.promisify(w3cDID.createIdentity)("demo", `id-${validatorDIDCount++}`);
         validatorDID = DID.getIdentifier();
     }
     return validatorDID;
