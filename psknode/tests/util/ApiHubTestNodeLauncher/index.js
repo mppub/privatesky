@@ -30,6 +30,7 @@ const defaultOptions = {
     bricksLedgerConfig: null,
     includeDefaultDomains: true,
     contractBuildFilePath: null,
+    onPortAquired: null,
     onBeforeServerStart: null,
 };
 
@@ -66,6 +67,11 @@ function ApiHubTestNodeLauncher(options) {
             }
         }
 
+        if (typeof options.onPortAquired === "function") {
+            // allow for config to be changed when port is known
+            options.onPortAquired(apiHubPort, options);
+        }
+
         const nodeUrl = `http://localhost:${apiHubPort}`;
 
         storeRequiredEnvironmentVariables(rootFolder, nodeUrl);
@@ -89,6 +95,7 @@ function ApiHubTestNodeLauncher(options) {
         }
 
         const bdns = getBDNSEntries(options, nodeUrl, validators);
+        logger.info(`Using the following BDNS content for ${nodeUrl}:`, bdns);
         await storeDBNSAsync(rootFolder, bdns);
 
         if (isBricksLedgerRequired) {
@@ -142,6 +149,7 @@ function ApiHubTestNodeLauncher(options) {
                 domainSeed,
                 validatorDID,
                 validatorURL: nodeUrl,
+                url: nodeUrl,
                 validatorDIDInstance,
             };
 

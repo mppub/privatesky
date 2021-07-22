@@ -34,7 +34,7 @@ async function boot() {
 
     try {
         const { port, rootFolder, contractBuildFilePath, disableLogging } = workerData;
-        if(disableLogging) {
+        if (disableLogging) {
             console.log = () => {};
             console.error = () => {};
         }
@@ -55,9 +55,14 @@ async function boot() {
         const apiHubResult = await apiHubLoadedPromise;
 
         if (contractBuildFilePath) {
-            const domainSeed = await buildAndCreateConstractDomain();
-            parentPort.postMessage({ domainSeed });
-            apiHubInstance.close();
+            try {
+                const domainSeed = await buildAndCreateConstractDomain();
+                parentPort.postMessage({ domainSeed });
+                apiHubInstance.close();
+            } catch (error) {
+                logger.error(`Build error`, error);
+                throw error;
+            }
             return;
         }
 
