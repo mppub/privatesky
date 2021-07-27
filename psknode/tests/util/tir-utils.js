@@ -17,6 +17,22 @@ function getRandomPort() {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+async function getRandomAvailablePortAsync(maxTries = 10) {
+    while (maxTries > 0) {
+        let port = getRandomPort();
+        logger.info(`Generated random port ${port}`);
+
+        if (await isPortAvailableAsync(port)) {
+            logger.info(`Port ${port} is available`);
+            return port;
+        }
+
+        maxTries--;
+    }
+
+    throw new Error(`Could not find available port after ${maxTries} retries`);
+}
+
 function createKey(name) {
     let parsed = "" + name;
     parsed.replace(/^[A-Za-z0-9 ]+/g, " ");
@@ -224,4 +240,5 @@ module.exports = {
     storeFileAsync,
     isPortAvailable,
     isPortAvailableAsync,
+    getRandomAvailablePortAsync,
 };

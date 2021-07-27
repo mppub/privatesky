@@ -11,7 +11,7 @@ const os = require("os");
 const fs = require("fs");
 const pskPath = require("swarmutils").path;
 
-const { getRandomPort, createKey, createConstitution, whenAllFinished, buildConstitution } = require("./tir-utils");
+const { getRandomPort, createKey, createConstitution, whenAllFinished, buildConstitution, getRandomAvailablePortAsync } = require("./tir-utils");
 const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
 
 const Tir = function () {
@@ -493,6 +493,8 @@ const Tir = function () {
         virtualMQNode = node;
         return rest;
     };
+
+    this.getRandomAvailablePortAsync = getRandomAvailablePortAsync;
 
     this.launchApiHubTestNodeWithContract = (contractBuildFilePath, domain, config, callback) => {
         if (typeof config === "function") {
