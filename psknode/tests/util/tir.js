@@ -543,7 +543,7 @@ const Tir = function () {
         const domainConfig =
             config.domains && config.domains[0] && typeof config.domains[0] === "object" ? config.domains[0].config : {};
         domainConfig.contracts = domainConfig.contracts || {};
-        domainConfig.contracts.constitution = rest.domainSeed;
+        domainConfig.contracts.constitution = rest.contractConstitution;
 
         const result = {
             ...rest,
