@@ -15,16 +15,12 @@ async function buildAndCreateConstractDomain() {
     logger.info("Building and creating contract domain...");
     const { rootFolder, contractBuildFilePath } = workerData;
     const contractSeedPath = path.join(rootFolder, ".contract-seed");
-    const domainSeedPath = path.join(rootFolder, ".domain-seed");
 
     // build contract DSU type
     await runOctopusScriptAsync("buildDossier", [`--seed=${contractSeedPath}`, contractBuildFilePath]);
     const contractSeed = fs.readFileSync(contractSeedPath, { encoding: "utf8" });
+    return contractSeed;
 
-    // create DSU for contract
-    await runOctopusScriptAsync("createDomain", [`--dsu-type-ssi=${contractSeedPath}`, `--seed=${domainSeedPath}`]);
-    const domainSeed = fs.readFileSync(domainSeedPath, { encoding: "utf8" });
-    return domainSeed;
 }
 
 async function boot() {
