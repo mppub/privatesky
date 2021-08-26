@@ -70,6 +70,10 @@
       "src": "https://github.com/privatesky/pskdb.git"
     },
     {
+      "name": "default-enclave",
+      "src": "https://github.com/OpenDSU/DefaultEnclave.git"
+    },
+    {
       "name": "psk-http-client",
       "src": "https://github.com/privatesky/psk-http-client.git"
     },
