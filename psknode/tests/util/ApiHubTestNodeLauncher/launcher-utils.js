@@ -1,7 +1,7 @@
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-const { storeFileAsync } = require("../tir-utils");
+const {storeFileAsync} = require("../tir-utils");
 const Logger = require("../Logger");
 
 const logger = new Logger("[TIR]");
@@ -12,7 +12,7 @@ const writeFileAsync = $$.promisify(fs.writeFile);
 let validatorDIDCount = 0;
 
 function getCompleteOptions(options, defaultOptions) {
-    const completeOptions = { ...options };
+    const completeOptions = {...options};
     Object.keys(defaultOptions).forEach((defaultOptionName) => {
         if (completeOptions[defaultOptionName] == null) {
             completeOptions[defaultOptionName] = defaultOptions[defaultOptionName];
@@ -30,7 +30,14 @@ function getCompleteOptions(options, defaultOptions) {
     }
 
     if (completeOptions.includeDefaultDomains) {
-        const defaultDomains = ["default", "test1", "test2"];
+        const defaultDomains = ["default", "test1", "test2", {
+            name: "vault", config: {
+                "anchoring": {
+                    "type": "FS",
+                    "option": {}
+                }
+            }
+        }];
         defaultDomains
             .filter((defaultDomainName) => {
                 const isDomainAlreadyConfigured = completeOptions.domains.some((existingDomain) => {
@@ -84,7 +91,7 @@ function getValidators(options, validatorDID, nodeUrl) {
     let validators = options.validators;
     if (!validators) {
         // if nothing is specified for the validators, then consider self as validators
-        validators = [{ DID: validatorDID, URL: nodeUrl }];
+        validators = [{DID: validatorDID, URL: nodeUrl}];
     }
     return validators;
 }
@@ -117,7 +124,7 @@ async function createApiHubInstanceAsync(...args) {
 
 async function createApiHubInstanceWorkerAsync(apiHubOptions) {
     logger.info("Starting apihub worker instance...", apiHubOptions);
-    const { Worker } = require("worker_threads");
+    const {Worker} = require("worker_threads");
     const worker = new Worker(path.join(__dirname, "./ApiHubTestNodeLauncherWorkerBoot.js"), {
         workerData: apiHubOptions,
     });
@@ -141,19 +148,19 @@ async function createApiHubInstanceWorkerAsync(apiHubOptions) {
 function getDomainNameAndConfig(domain) {
     const domainName = typeof domain === "string" ? domain : domain.name;
     const domainConfig = typeof domain === "string" ? {} : domain.config;
-    return { name: domainName, config: domainConfig };
+    return {name: domainName, config: domainConfig};
 }
 
 async function updateDomainConfigsWithContractConstitutionAsync(rootFolder, domains, domainSeed) {
     logger.info("Updating domain configs...");
     const updatedDomainConfigs = domains.map((domain) => {
-        const { name, config } = getDomainNameAndConfig(domain);
+        const {name, config} = getDomainNameAndConfig(domain);
         if (!config.contracts) {
             config.contracts = {};
         }
         config.contracts.constitution = domainSeed;
 
-        return { name, config };
+        return {name, config};
     });
     await storeServerDomainConfigsAsync(rootFolder, updatedDomainConfigs);
 }
@@ -168,7 +175,7 @@ async function storeServerDomainConfigsAsync(rootFolder, domains) {
     const domainConfigsFolderPath = path.join(configFolderPath, "domains");
     for (let index = 0; index < domains.length; index++) {
         const domain = domains[index];
-        const { name, config } = getDomainNameAndConfig(domain);
+        const {name, config} = getDomainNameAndConfig(domain);
 
         await storeFileAsync(domainConfigsFolderPath, `${name}.json`, JSON.stringify(config));
     }
@@ -188,15 +195,15 @@ async function storeDBNSAsync(rootFolder, content) {
 
     let configFolderPath = getConfigFolderPath(rootFolder);
 
-    await mkdirAsync(configFolderPath, { recursive: true });
+    await mkdirAsync(configFolderPath, {recursive: true});
     await writeFileAsync(path.join(configFolderPath, "bdns.hosts"), content);
 
     if (bdnsEntries.length) {
         const bdnsConfigsFolderPath = path.join(configFolderPath, "bdns");
-        await mkdirAsync(bdnsConfigsFolderPath, { recursive: true });
+        await mkdirAsync(bdnsConfigsFolderPath, {recursive: true});
 
         for (let index = 0; index < bdnsEntries.length; index++) {
-            const { domain, content } = bdnsEntries[index];
+            const {domain, content} = bdnsEntries[index];
             await storeFileAsync(bdnsConfigsFolderPath, `${domain}.json`, JSON.stringify(content));
         }
     }
