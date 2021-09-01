@@ -473,6 +473,18 @@ const Tir = function () {
         }, 100);
     };
 
+    this.restart = (callback) => {
+        if (virtualMQNode) {
+            console.log("[TIR] Killing VirtualMQ node", virtualMQNode.pid);
+            try {
+                process.kill(virtualMQNode.pid);
+            } catch (e) {
+                console.info("[TIR] VirtualMQ node already killed", virtualMQNode.pid);
+            }
+        }
+        launchVirtualMQNode(100, rootFolder, callback);
+    }
+
     this.buildConstitution = buildConstitution;
 
     this.launchConfigurableApiHubTestNode = (config, callback) => {
