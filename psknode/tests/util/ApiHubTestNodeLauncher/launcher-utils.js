@@ -125,11 +125,11 @@ async function createApiHubInstanceAsync(...args) {
 async function createApiHubInstanceWorkerAsync(apiHubOptions) {
     logger.info("Starting apihub worker instance...", apiHubOptions);
     const {Worker} = require("worker_threads");
-    const worker = new Worker(path.join(__dirname, "./ApiHubTestNodeLauncherWorkerBoot.js"), {
-        workerData: apiHubOptions,
-    });
 
     return new Promise((resolve, reject) => {
+        const worker = new Worker(path.join(__dirname, "./ApiHubTestNodeLauncherWorkerBoot.js"), {
+            workerData: apiHubOptions,
+        });
         worker.on("message", (result) => {
             resolve(result);
             if (apiHubOptions.contractBuildFilePath) {
