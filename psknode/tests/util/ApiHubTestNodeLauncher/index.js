@@ -15,7 +15,7 @@ const {
     storeDBNSAsync,
 } = require("./launcher-utils");
 const Logger = require("../Logger");
-const { clone } = require("../../../../modules/apihub/utils");
+const clone = (data)=>{return JSON.parse(JSON.stringify(data));}
 
 const logger = new Logger("[TIR]");
 
