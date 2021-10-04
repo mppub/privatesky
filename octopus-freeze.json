@@ -8,7 +8,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "1345604a97e154411a53e1527f673624de69347b"
+                    "commit": "d284f8307774981f46a0b94ecbc89ee9836c1057"
                 }
             ]
         },
@@ -107,7 +107,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "f8381cb9a571b29d90b8e00b925d1a1e8a634507"
+                    "commit": "87f57f59d2d11b817389fe1abf18d67d5f78901b"
                 }
             ]
         },
@@ -129,7 +129,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "792450aa6c14a6086aea6751e5ab3a47e21eab0c"
+                    "commit": "65d5c701a93ec8eda5753e4744d42a2daebc4c36"
                 }
             ]
         },
@@ -151,7 +151,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "78342f1985a15d06ba899ba2cc70aab8c1c00f06"
+                    "commit": "21abd2a4e10967b13a435ac1be94428c4534c713"
                 }
             ]
         },
@@ -185,6 +185,17 @@
                     "type": "smartClone",
                     "target": "modules",
                     "commit": "7ae5b62c30710d2a2858979910df8ddedb9ed094"
+                }
+            ]
+        },
+        {
+            "name": "default-enclave",
+            "src": "https://github.com/OpenDSU/DefaultEnclave.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": "modules",
+                    "commit": "1451e2c98e3f8df6ed534043a0b0190a3b720d79"
                 }
             ]
         },
@@ -327,7 +338,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "9acef7315f9388615282ac127a334e246386f1d2"
+                    "commit": "0bce4824ae949c89a851e3c8dd397c3e9f54f073"
                 }
             ]
         },
@@ -382,7 +393,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "dcda3fe243d2b42f4e1f7b991ba6366e656f5631"
+                    "commit": "98375ba3f2ec6edd3b7e438366e01293caa02b88"
                 }
             ]
         },
