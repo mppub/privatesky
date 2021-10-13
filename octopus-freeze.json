@@ -129,7 +129,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "fbd9efa6425694d93ae5ccee2f2128874738df56"
+                    "commit": "8b8a7963e901f8667f355191a8f8dd8dbae956b6"
                 }
             ]
         },
