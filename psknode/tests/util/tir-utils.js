@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const Logger = require("./Logger");
+const net = require("net");
 
 const logger = new Logger("[TIR]");
 
@@ -82,7 +83,7 @@ function createConstitutionFromSources(sources, options, callback) {
     sourcesPaths = sourcesPaths.join(",");
 
     const projectMap = {
-        [internalOptions.constitutionName]: { deps: sourcesNames, autoLoad: true },
+        [internalOptions.constitutionName]: {deps: sourcesNames, autoLoad: true},
     };
 
     const dc = require("double-check");
@@ -116,7 +117,7 @@ function createConstitutionFromSources(sources, options, callback) {
                     callback(undefined, path.join(outputFolder, `${internalOptions.constitutionName}.js`));
 
                     if (internalOptions.cleanupTmpDir) {
-                        fs.rmdir(tmpFolder, { recursive: true }, (err) => {
+                        fs.rmdir(tmpFolder, {recursive: true}, (err) => {
                             if (err) {
                                 logger.warn(`Failed to delete temporary folder "${tmpFolder}"`);
                             }
@@ -141,7 +142,7 @@ function createConstitution(prefix, describer, options, constitutionSourcesFolde
         const tempConstitutionFolder = path.join(prefix, "tmpConstitution");
         const file = path.join(tempConstitutionFolder, "index.js");
 
-        fs.mkdirSync(tempConstitutionFolder, { recursive: true });
+        fs.mkdirSync(tempConstitutionFolder, {recursive: true});
         fs.writeFileSync(file, contents);
         constitutionSourcesFolder.push(tempConstitutionFolder);
     }
@@ -197,9 +198,9 @@ async function storeFileAsync(rootFolder, filename, content) {
     logger.info(`Storing file '${filename}' at ${rootFolder}...`, content);
 
     try {
-        await mkdirAsync(rootFolder, { recursive: true });
+        await mkdirAsync(rootFolder, {recursive: true});
     } catch (error) {
-        logger.error(`Cannot create folder path ${rootFolder}`, err);
+        logger.error(`Cannot create folder path ${rootFolder}`, error);
         throw error;
     }
 
@@ -214,17 +215,17 @@ function isPortAvailable(port, callback) {
 }
 
 async function isPortAvailableAsync(port) {
-    let commType = "http";
-    logger.info(`Checking if port ${port} is available. Please wait...`);
+    logger.info(`TIR is checking if port ${port} is available. Please wait...`);
 
     return new Promise((resolve) => {
-        require(commType)
-            .request({ port }, (res) => {
-                resolve(false);
-            })
-            .on("error", (err) => {
-                resolve(true);
-            });
+        const net = require('net');
+        const client = net.createConnection({port}, () => {
+            client.end();
+            resolve(false)
+        });
+        client.on("error", (err) => {
+            resolve(true);
+        })
     });
 }
 

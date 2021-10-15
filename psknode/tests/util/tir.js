@@ -11,20 +11,15 @@ const os = require("os");
 const fs = require("fs");
 const pskPath = require("swarmutils").path;
 
-const { getRandomPort, createKey, createConstitution, whenAllFinished, buildConstitution, getRandomAvailablePortAsync } = require("./tir-utils");
+const {createKey, buildConstitution, getRandomAvailablePortAsync} = require("./tir-utils");
 const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
 
 const Tir = function () {
-    const pingPongFork = require("../../core/utils/pingpongFork");
-    const openDSU = require("opendsu");
-
     const domainConfigs = {};
     const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
 
     let testerNode = null;
     let virtualMQNode = null;
-    let virtualMQPort = null;
-    let zeroMQPort = null;
 
     /**
      * Adds a domain to the configuration, in a fluent way.
@@ -49,384 +44,25 @@ const Tir = function () {
         };
     };
 
-    /**
-     * Launches all the configured domains.
-     *
-     * @param {number|function} tearDownAfter The number of milliseconds the TIR will tear down, even if the test fails. If missing, you must call tearDown
-     * @param {function} callable The callback
-     */
-    this.launch = (tearDownAfter, callable) => {
-        if (callable === undefined && tearDownAfter.call) {
-            callable = tearDownAfter;
-            tearDownAfter = null;
-        }
-
-        if (testerNode !== null) {
-            throw new Error("Test node already launched!");
-        }
-
-        if (virtualMQNode !== null) {
-            throw new Error("VirtualMQ node already launched!");
-        }
-
-        console.info("[TIR] setting working folder root", rootFolder);
-
-        const assert = require("double-check").assert;
-        assert.addCleaningFunction(() => {
-            this.tearDown(0);
-        });
-
-        launchVirtualMQNode(100, rootFolder, (err, vmqPort) => {
-            if (err) {
-                throw err;
-            }
-
-            virtualMQPort = vmqPort;
-            $$.BDNS.addConfig("default", {
-                endpoints: [
-                    {
-                        endpoint: `http://localhost:${virtualMQPort}`,
-                        type: "brickStorage",
-                    },
-                    {
-                        endpoint: `http://localhost:${virtualMQPort}`,
-                        type: "anchorService",
-                    },
-                ],
-            });
-
-            if (Object.keys(domainConfigs).length === 0) {
-                // no domain added
-                prepareTeardownTimeout();
-                callable(undefined, virtualMQPort);
-
-                return;
-            }
-
-            launchLocalMonitor(callCallbackWhenAllDomainsStarted);
-
-            fs.mkdirSync(path.join(rootFolder, "nodes"), { recursive: true });
-
-            const fakeDomainFile = path.join(rootFolder, "domain.js");
-            fs.writeFileSync(fakeDomainFile, "console.log('domain.js loaded.')");
-
-            const defaultConstitutionBundlesPath = [
-                path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskruntime.js")),
-                path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/edfsBar.js")),
-                path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/blockchain.js")),
-                path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")),
-                fakeDomainFile,
-            ];
-
-            EDFS.createDSU("Bar", (err, launcherBar) => {
-                if (err) {
-                    throw err;
-                }
-
-                launcherBar.load((err) => {
-                    if (err) {
-                        throw err;
-                    }
-                    launcherBar.addFiles(defaultConstitutionBundlesPath, openDSU.constants.CONSTITUTION_FOLDER, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-
-                        launcherBar.getKeySSIAsString((err, launcherKeySSI) => {
-                            if (err) {
-                                throw err;
-                            }
-                            const dossier = require("dossier");
-
-                            dossier.load(launcherKeySSI, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
-                                if (err) {
-                                    throw err;
-                                }
-
-                                global.currentHandler = csbHandler;
-                                whenAllFinished(Object.values(domainConfigs), this.buildDomainConfiguration, (err) => {
-                                    if (err) {
-                                        throw err;
-                                    }
-
-                                    const seed = launcherKeySSI;
-
-                                    testerNode = pingPongFork.fork(
-                                        path.resolve(path.join(__dirname, "../../core/launcher.js")),
-                                        [seed, rootFolder],
-                                        {
-                                            stdio: "inherit",
-                                            env: {
-                                                PSK_PUBLISH_LOGS_ADDR: `tcp://127.0.0.1:${zeroMQPort}`,
-                                            },
-                                        }
-                                    );
-
-                                    initializeSwarmEngine(virtualMQPort);
-                                    prepareTeardownTimeout();
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-
-        let domainsLeftToStart = Object.keys(domainConfigs).length;
-
-        function callCallbackWhenAllDomainsStarted() {
-            domainsLeftToStart -= 1;
-
-            if (domainsLeftToStart === 0) {
-                callable(undefined, virtualMQPort);
-            }
-        }
-
-        let prepareTeardownTimeout = () => {
-            setTimeout(() => {
-                if (tearDownAfter !== null) {
-                    setTimeout(() => this.tearDown(1), tearDownAfter);
-                }
-            }, 1000);
-        };
-    };
-
-    function launchVirtualMQNode(maxTries, rootFolder, callback) {
+    function launchApiHubTestNode(maxTries, rootFolder, callback) {
         let config = {};
-        if (typeof maxTries === "object") {
-            config = maxTries;
-            callback = rootFolder;
-        } else {
-            if (typeof rootFolder === "function") {
-                callback = rootFolder;
-                rootFolder = maxTries;
-                maxTries = 100;
-            }
-
-            if (typeof maxTries === "function") {
-                callback = maxTries;
-                rootFolder = rootFolder;
-                maxTries = 100;
-            }
-
-            config = { maxTries, rootFolder };
+        if (!callback) {
+            throw Error(`Invalid number of arguments`);
         }
-
+        config = {maxTries, rootFolder};
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
         apiHubTestNodeLauncher.launch((err, result) => {
             if (err) {
                 return callback(err);
             }
-            const { port, node } = result;
+            const {port, node} = result;
             virtualMQNode = node;
             callback(null, port);
         });
     }
 
-    this.launchVirtualMQNode = launchVirtualMQNode;
-    this.launchApiHubTestNode = launchVirtualMQNode;
-
-    function launchLocalMonitor(maxTries, onBootMessage) {
-        if (typeof maxTries === "function") {
-            onBootMessage = maxTries;
-            maxTries = 100;
-        }
-
-        if (typeof maxTries !== "number" || maxTries < 0) {
-            maxTries = 100;
-        }
-
-        const zeromqName = "zeromq";
-        const zmq = require(zeromqName);
-        const zmqReceiver = zmq.createSocket("sub");
-
-        zmqReceiver.subscribe("events.status.domains.boot");
-        zmqReceiver.on("message", onBootMessage);
-
-        let portFound = false;
-
-        while (!portFound && maxTries > 0) {
-            zeroMQPort = getRandomPort();
-            maxTries -= 1;
-            try {
-                zmqReceiver.bindSync(`tcp://127.0.0.1:${zeroMQPort}`);
-                portFound = true;
-            } catch (e) {
-                console.log(e);
-            } // port not found yet
-        }
-
-        if (!portFound) {
-            throw new Error("Could not find a free port for zeromq");
-        }
-
-        console.log("[TIR] zeroMQ bound to address", `tcp://127.0.0.1:${zeroMQPort}`);
-    }
-
-    function initializeSwarmEngine(port) {
-        const se = require("swarm-engine");
-        try {
-            se.initialise();
-        } catch (err) {
-            //
-        }
-
-        const powerCordToDomain = new se.SmartRemoteChannelPowerCord([`http://127.0.0.1:${port}/`]);
-        $$.swarmEngine.plug("*", powerCordToDomain);
-    }
-
-    /**
-     * Builds the config for a node.
-     *
-     * @param {object} domainConfig The domain configuration stored by addDomain
-     * @param callback
-     */
-    this.buildDomainConfiguration = (domainConfig, callback) => {
-        console.info("[TIR] domain " + domainConfig.name + " in workspace", domainConfig.workspace);
-
-        fs.mkdirSync(domainConfig.workspace, { recursive: true });
-
-        getConstitutionSeed((err, constitutionSeed) => {
-            if (err) {
-                return callback(err);
-            }
-
-            const zeroMQPort = getRandomPort();
-            const communicationInterfaces = {
-                system: {
-                    virtualMQ: `http://127.0.0.1:${virtualMQPort}`,
-                    //zeroMQ: `tcp://127.0.0.1:${zeroMQPort}`
-                },
-            };
-
-            global.currentHandler
-                .startTransaction("Domain", "add", domainConfig.name, "system", domainConfig.workspace, constitutionSeed)
-                .onReturn((err) => {
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    if (domainConfig.agents && Array.isArray(domainConfig.agents) && domainConfig.agents.length > 0) {
-                        const dossier = require("dossier");
-                        dossier.load(constitutionSeed, "TIR_AGENT_IDENTITY", (err, csbHandler) => {
-                            if (err) {
-                                return callback(err);
-                            }
-
-                            let transactionsLeft = domainConfig.agents.length + 1;
-
-                            console.info("[TIR] domain " + domainConfig.name + " starting defining agents...");
-
-                            domainConfig.agents.forEach((agentName) => {
-                                console.info("[TIR] domain " + domainConfig.name + " agent", agentName);
-                                csbHandler.startTransaction("Agents", "add", agentName, "public_key").onReturn(maybeCallCallback);
-                            });
-
-                            csbHandler
-                                .startTransaction("DomainConfigTransaction", "add", domainConfig.name, communicationInterfaces)
-                                .onReturn(maybeCallCallback);
-
-                            function maybeCallCallback(err) {
-                                if (err) {
-                                    transactionsLeft = -1;
-                                    return callback(err);
-                                }
-
-                                transactionsLeft -= 1;
-
-                                if (transactionsLeft === 0) {
-                                    callback();
-                                }
-                            }
-                        });
-                    } else {
-                        callback();
-                    }
-                });
-        });
-
-        function getConstitutionSeed(callback) {
-            const constitutionBundles = [domainConfig.bundlesSourceFolder];
-            //console.log("constitutionBundles", constitutionBundles);
-
-            deployConstitutionCSB(constitutionBundles, domainConfig.name, (err, archive) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                buildConstitution(domainConfig.constitutionSourceFolder, archive, (err) => {
-                    if (err) {
-                        return callback(err);
-                    }
-                    archive.getKeySSIAsString((err, keySSI) => {
-                        callback(err, keySSI);
-                    });
-                });
-            });
-        }
-
-        function deployConstitutionCSB(constitutionPaths, domainName, callback) {
-            if (typeof domainName === "function" && typeof callback === "undefined") {
-                callback = domainName;
-                domainName = "";
-            }
-
-            EDFS.createDSU("Bar", (err, constitutionArchive) => {
-                if (err) {
-                    return callback(err);
-                }
-                const lastHandler = (err) => {
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    callback(undefined, constitutionArchive);
-                };
-
-                const __addNext = (index = 0) => {
-                    constitutionArchive.load((err) => {
-                        if (err) {
-                            return lastHandler(err);
-                        }
-
-                        if (index >= constitutionPaths.length) {
-                            if (domainName !== "") {
-                                constitutionArchive.writeFile(openDSU.constants.DOMAIN_IDENTITY_FILE, domainName, lastHandler);
-                            } else {
-                                lastHandler();
-                            }
-
-                            return;
-                        }
-
-                        const currentPath = constitutionPaths[index];
-                        constitutionArchive.addFolder(
-                            currentPath,
-                            pskPath.join(openDSU.constants.CODE_FOLDER, openDSU.constants.CONSTITUTION_FOLDER),
-                            (err) => {
-                                if (err) {
-                                    return callback(err);
-                                }
-
-                                __addNext(index + 1);
-                            }
-                        );
-                    });
-                };
-                __addNext();
-            });
-        }
-
-        function getConstitutionFile(callback) {
-            createConstitution(
-                domainConfig.workspace,
-                domainConfig.constitution,
-                undefined,
-                domainConfig.constitutionSourceFolder,
-                callback
-            );
-        }
-    };
+    this.launchVirtualMQNode = launchApiHubTestNode;
+    this.launchApiHubTestNode = launchApiHubTestNode;
 
     this.getDomainConfig = (domainName) => {
         return domainConfigs[domainName];
@@ -461,7 +97,7 @@ const Tir = function () {
         setTimeout(() => {
             try {
                 console.info("[TIR] Removing temporary folder", rootFolder);
-                fs.rmdirSync(rootFolder, { recursive: true });
+                fs.rmdirSync(rootFolder, {recursive: true});
                 console.info("[TIR] Temporary folder removed", rootFolder);
             } catch (e) {
                 //just avoid to display error on console
@@ -482,7 +118,7 @@ const Tir = function () {
                 console.info("[TIR] VirtualMQ node already killed", virtualMQNode.pid);
             }
         }
-        launchVirtualMQNode(100, rootFolder, callback);
+        launchApiHubTestNode(100, rootFolder, callback);
     }
 
     this.buildConstitution = buildConstitution;
@@ -501,7 +137,7 @@ const Tir = function () {
         config = config || {};
 
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
-        const { node, ...rest } = await apiHubTestNodeLauncher.launchAsync();
+        const {node, ...rest} = await apiHubTestNodeLauncher.launchAsync();
         virtualMQNode = node;
         return rest;
     };
@@ -543,12 +179,12 @@ const Tir = function () {
         }
         if (!domain && !config.domains) {
             domain = "contract";
-            config = { ...config, domains: [domain] };
+            config = {...config, domains: [domain]};
         }
 
-        config = { ...config, contractBuildFilePath };
+        config = {...config, contractBuildFilePath};
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
-        const { node, ...rest } = await apiHubTestNodeLauncher.launchAsync();
+        const {node, ...rest} = await apiHubTestNodeLauncher.launchAsync();
         virtualMQNode = node;
 
         // return the updated domainConfig for further usage inside integration tests

@@ -1,4 +1,4 @@
-const { sleepAsync, getRandomPort, isPortAvailableAsync } = require("../tir-utils");
+const { sleepAsync, getRandomPort, getRandomAvailablePortAsync, isPortAvailableAsync } = require("../tir-utils");
 
 const {
     getCompleteOptions,
@@ -56,17 +56,7 @@ function ApiHubTestNodeLauncher(options) {
     this.launchAsync = async () => {
         let apiHubPort = port;
         if (!apiHubPort) {
-            while (maxTries > 0) {
-                apiHubPort = getRandomPort();
-                logger.info(`Generated random port ${apiHubPort}`);
-
-                if (await isPortAvailableAsync(apiHubPort)) {
-                    logger.info(`Port ${apiHubPort} is available`);
-                    break;
-                }
-
-                maxTries--;
-            }
+            apiHubPort = await getRandomAvailablePortAsync(maxTries);
         }
 
         if (typeof options.onPortAquired === "function") {
