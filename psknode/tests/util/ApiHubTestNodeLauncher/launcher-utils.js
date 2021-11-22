@@ -35,7 +35,8 @@ function getCompleteOptions(options, defaultOptions) {
                 "anchoring": {
                     "type": "FS",
                     "option": {}
-                }
+                },
+                "enable": ["mq"]
             }
         }];
         defaultDomains
