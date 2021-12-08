@@ -1,4 +1,4 @@
-const TAG = "API-HUB";
+const TAG = "API-HUB-LAUNCHER";
 
 let path = require("path");
 
@@ -36,6 +36,7 @@ function startServer() {
     API_HUB.createInstance(listeningPort, rootFolder, sslConfig, (err) => {
         if (err) {
             console.error(err);
+            process.exit(err.errno || 1);
         }
         console.log(`\n[${TAG}] listening on port :${listeningPort} and ready to receive requests.\n`);
     });
