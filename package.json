@@ -1,6 +1,6 @@
 {
   "name": "PrivateSky",
-  "description": "Execute swarm choregraphies. Control your asynchronous code with explicit flows! Created mainly for simplifying code within SwarmESB/PrivateSky projects but can be used outside SwarmESB ecosystem. ",
+  "description": "Execute swarm choregraphies. OpenDSU ",
   "version": "1.0.0",
   "homepage": "https://github.com/PrivateSky/privatesky",
   "author": {
