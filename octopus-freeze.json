@@ -8,7 +8,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "2a0dbc6d922318efa23b755e71ffcde558b5c53f"
+                    "tag": "0.0.1"
                 }
             ]
         },
@@ -19,7 +19,7 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "38f4ddc628d047112713c30513b2e1fcfe4c033a"
+                    "commit": "51a8ebfb7d91996cf876d39e1174c1b6c16908c2"
                 }
             ]
         }
